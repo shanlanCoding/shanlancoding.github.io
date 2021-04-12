@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>netlify服务器自定义域名添加自定义证书开启HTTPS的正确方法 | 山岚 - 90码农历险记</title>
+  <meta name="description" content="什么是netlify？netlify和GitHub pages 的作用一样，托管静态代码的服务器，可以参考我这一篇文章：GitHub pages开启Https、自定义域名和CDN加速。说直白点，就是存放HTML等静态文件的服务器。 为什么要选择netlify？根据我使用了不到一天的体会，  netlify的速度更快。服务器多，我通过工具查询，netlify提供了7、8个的IP提供用户访问。相比较G">
+<meta property="og:type" content="article">
+<meta property="og:title" content="netlify服务器自定义域名添加自定义证书开启HTTPS的正确方法">
+<meta property="og:url" content="https://blog.gobyte.cn/post/b5463510.html">
+<meta property="og:site_name" content="山岚博客">
+<meta property="og:description" content="什么是netlify？netlify和GitHub pages 的作用一样，托管静态代码的服务器，可以参考我这一篇文章：GitHub pages开启Https、自定义域名和CDN加速。说直白点，就是存放HTML等静态文件的服务器。 为什么要选择netlify？根据我使用了不到一天的体会，  netlify的速度更快。服务器多，我通过工具查询，netlify提供了7、8个的IP提供用户访问。相比较G">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://user-images.githubusercontent.com/44717382/59402740-4d3cf580-8dd2-11e9-816a-e2b3f85f30b0.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/44717382/59403551-9c385a00-8dd5-11e9-90e2-407bd4709f13.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/44717382/59403616-f46f5c00-8dd5-11e9-8daa-149e24c4a6a4.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/44717382/59403714-5760f300-8dd6-11e9-83c9-dd6f0e57f53a.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/44717382/59404058-b8d59180-8dd7-11e9-9cc6-8675795b76f4.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/44717382/59404271-8b3d1800-8dd8-11e9-82b7-497f1b134a5d.png">
+<meta property="og:image" content="https://user-images.githubusercontent.com/44717382/59404399-f555bd00-8dd8-11e9-8c30-d24ec0965a05.png">
+<meta property="article:published_time" content="2019-06-13T03:34:17.000Z">
+<meta property="article:modified_time" content="2020-02-06T12:09:13.739Z">
+<meta property="article:author" content="山岚">
+<meta property="article:tag" content="Hexo">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://user-images.githubusercontent.com/44717382/59402740-4d3cf580-8dd2-11e9-816a-e2b3f85f30b0.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.gobyte.cn/post/b5463510.html">
+  
+    <link rel="alternate" href="/atom.xml" title="山岚博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/shan-2.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/shanlanCoding" target="_blank">
+          <img class="img-circle img-rotate" src="/images/ha-002-small.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">山岚</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">半吊子全栈开发者</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Work in Home; Home is in 0713</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links/">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>人生短短几个秋</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/windows/">windows</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8F%98%E5%BE%97%E6%9B%B4%E5%A5%BD/">变得更好</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E6%83%85/">心情</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%89%8B%E6%9C%BA/">手机</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B1%82%E8%81%8C/">求职</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%AA%9A%E6%93%8D%E4%BD%9C/">骚操作</a><span class="category-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoJs/" rel="tag">AutoJs</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">Java面试题</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/" rel="tag">Shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/centOS/" rel="tag">centOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E5%9F%BA%E7%A1%80/" rel="tag">java基础</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" rel="tag">java集合框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows-10/" rel="tag">windows 10</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" rel="tag">人脸识别</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" rel="tag">博客优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%90%E6%A7%BD/" rel="tag">吐槽</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E7%B1%B36/" rel="tag">小米6</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" rel="tag">思维改变</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%8B%E6%9C%BA/" rel="tag">手机</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" rel="tag">浏览器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%88%AC%E8%99%AB/" rel="tag">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" rel="tag">自定义手机号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%94%AE%E7%9B%98/" rel="tag">键盘</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/AutoJs/" style="font-size: 13.4px;">AutoJs</a> <a href="/tags/Git/" style="font-size: 13.4px;">Git</a> <a href="/tags/Hexo/" style="font-size: 13.8px;">Hexo</a> <a href="/tags/Java/" style="font-size: 13px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 13.2px;">JavaScript</a> <a href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" style="font-size: 13.6px;">Java面试题</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/Shell/" style="font-size: 13px;">Shell</a> <a href="/tags/centOS/" style="font-size: 13px;">centOS</a> <a href="/tags/java%E5%9F%BA%E7%A1%80/" style="font-size: 13px;">java基础</a> <a href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" style="font-size: 13px;">java集合框架</a> <a href="/tags/linux/" style="font-size: 13px;">linux</a> <a href="/tags/nginx/" style="font-size: 13.2px;">nginx</a> <a href="/tags/vue/" style="font-size: 13px;">vue</a> <a href="/tags/windows-10/" style="font-size: 13px;">windows 10</a> <a href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" style="font-size: 13px;">人脸识别</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" style="font-size: 13px;">博客优化</a> <a href="/tags/%E5%90%90%E6%A7%BD/" style="font-size: 13px;">吐槽</a> <a href="/tags/%E5%B0%8F%E7%B1%B36/" style="font-size: 13px;">小米6</a> <a href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" style="font-size: 13px;">思维改变</a> <a href="/tags/%E6%89%8B%E6%9C%BA/" style="font-size: 13px;">手机</a> <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" style="font-size: 13px;">浏览器</a> <a href="/tags/%E7%88%AC%E8%99%AB/" style="font-size: 13px;">爬虫</a> <a href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" style="font-size: 13px;">自定义手机号</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" style="font-size: 13px;">路由器</a> <a href="/tags/%E9%94%AE%E7%9B%98/" style="font-size: 13px;">键盘</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/cbfeffee.html" class="title">警惕！IKBC机械键盘寿命离谱，满打满算一年不要！入手须慎重！</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-12T09:31:09.000Z" itemprop="datePublished">2021-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Python/">Python</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/615d4220.html" class="title">51cto视频解析下载过程分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-04T10:48:29.000Z" itemprop="datePublished">2021-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/e56fdb88.html" class="title">pure主题valine留言板添加：昵称、邮箱必填必写功能</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-22T12:47:06.000Z" itemprop="datePublished">2020-05-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/5613105b.html" class="title">error:Missmatchins image and device刷机报错解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-06T14:28:21.000Z" itemprop="datePublished">2020-05-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/46726573.html" class="title">解决微软EDGE浏览器在线大声朗读语音卡顿问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-15T15:22:25.000Z" itemprop="datePublished">2020-03-15</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是netlify？"><span class="toc-number">1.</span> <span class="toc-text">什么是netlify？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#为什么要选择netlify？"><span class="toc-number">2.</span> <span class="toc-text">为什么要选择netlify？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#如何开启自定义域名的https服务？"><span class="toc-number">3.</span> <span class="toc-text">如何开启自定义域名的https服务？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#部署完毕以后，我们进入到项目的settings里"><span class="toc-number">3.1.</span> <span class="toc-text">部署完毕以后，我们进入到项目的settings里</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#使用腾讯云，申请免费的SSL证书"><span class="toc-number">4.</span> <span class="toc-text">使用腾讯云，申请免费的SSL证书</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#DOMAIN-ALIASES"><span class="toc-number">4.0.1.</span> <span class="toc-text">DOMAIN ALIASES</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#域别名选项"><span class="toc-number">4.0.2.</span> <span class="toc-text">域别名选项</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#那么我为什么还要坚持去使用第三方的域名？"><span class="toc-number">4.0.3.</span> <span class="toc-text">那么我为什么还要坚持去使用第三方的域名？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#亚洲诚信的证书如何配置到netlify？"><span class="toc-number">5.</span> <span class="toc-text">亚洲诚信的证书如何配置到netlify？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#我翻遍了这4个文件夹，没有找到-PEM格式的文件"><span class="toc-number">5.0.1.</span> <span class="toc-text">我翻遍了这4个文件夹，没有找到.PEM格式的文件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Custom-Certificates"><span class="toc-number">5.1.</span> <span class="toc-text">Custom Certificates</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#自定义证书"><span class="toc-number">5.2.</span> <span class="toc-text">自定义证书</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#但是，选项3的CA证书链-CA-certificate-chain-去哪里找？"><span class="toc-number">5.2.1.</span> <span class="toc-text">但是，选项3的CA证书链 CA certificate chain 去哪里找？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#开始添加https证书"><span class="toc-number">5.2.2.</span> <span class="toc-text">开始添加https证书</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#CDN设置https回源"><span class="toc-number">6.</span> <span class="toc-text">CDN设置https回源</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-netlify服务器添加自定义证书开启HTTPS的正确方法" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header" name="标题头部>
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      netlify服务器自定义域名添加自定义证书开启HTTPS的正确方法
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/post/b5463510.html" class="article-date">
+	  <time datetime="2019-06-13T03:34:17.000Z" itemprop="datePublished">2019-06-13</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/Hexo/" rel="tag">Hexo</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/post/b5463510.html#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody" name="正文">
+      
+        <h1 id="什么是netlify？"><a href="#什么是netlify？" class="headerlink" title="什么是netlify？"></a>什么是netlify？</h1><p>netlify和GitHub pages 的作用一样，托管静态代码的服务器，可以参考我这一篇文章：<a href="https://blog.gobyte.cn/post/bc0a861a.html">GitHub pages开启Https、自定义域名和CDN加速</a>。说直白点，就是存放HTML等静态文件的服务器。</p>
+<h1 id="为什么要选择netlify？"><a href="#为什么要选择netlify？" class="headerlink" title="为什么要选择netlify？"></a>为什么要选择netlify？</h1><p>根据我使用了不到一天的体会，</p>
+<ol>
+<li><p>netlify的速度更快。服务器多，我通过工具查询，netlify提供了7、8个的IP提供用户访问。相比较GitHub的5个ip，它的访问速度远高于GitHub。</p>
+</li>
+<li><p>它支持添加多个自定义的域名。</p>
+</li>
+<li><p><a href="#1">持一键开启HTTPS服务（使用的是Let’s Encrypt提供的证书，需要修改域名的CANME解析）</a></p>
+</li>
+<li><p>支持添加自定义证书</p>
+</li>
+<li><p>支持自动部署（不再需要自己生成html文件再deploy到服务器）</p>
+<p>由于截止写稿时使用时间过短，所以难免还有地方没有表达完整，请见谅。</p>
+</li>
+</ol>
+<h1 id="如何开启自定义域名的https服务？"><a href="#如何开启自定义域名的https服务？" class="headerlink" title="如何开启自定义域名的https服务？"></a>如何开启自定义域名的https服务？</h1><ol>
+<li><p>部署博客程序到GitHub</p>
+</li>
+<li><p>通过GitHub注册netlify</p>
+</li>
+<li><p>通过netlify读取GitHub上面的博客程序，并自动部署</p>
+<p>因为如何部署至netlify不在本文的重点，所以上述三个步骤还请自行搜索解决，另外我也相信你可以做到的，加油！</p>
+<h2 id="部署完毕以后，我们进入到项目的settings里"><a href="#部署完毕以后，我们进入到项目的settings里" class="headerlink" title="部署完毕以后，我们进入到项目的settings里"></a>部署完毕以后，我们进入到项目的settings里</h2><ol>
+<li><p>找到settings菜单，并点击</p>
+</li>
+<li><p>找到 Domian management ，并点击</p>
+</li>
+<li><p>找到 Costom domains ， 这个就是自定义域名项目</p>
+</li>
+<li><p>向下翻滚，找到 Add domain alias ， 这个按钮就是添加自定义域名了。</p>
+<p><img src="https://user-images.githubusercontent.com/44717382/59402740-4d3cf580-8dd2-11e9-816a-e2b3f85f30b0.png" alt="image"></p>
+<p>这个时候就可以添加你的域名了。例如我添加的是：<code>blog.gobyte.cn</code>，效果见上图。</p>
+<h1 id="使用腾讯云，申请免费的SSL证书"><a href="#使用腾讯云，申请免费的SSL证书" class="headerlink" title="使用腾讯云，申请免费的SSL证书"></a>使用腾讯云，申请免费的SSL证书</h1><p>这里提一句，为什么我不直接使用netlify的证书，而是自己单独去申请一个。<a name="#1">上面提到过</a>，netlify使用它的自定义域名的https时，需要你修改域名的CANME指向netlify提供给你的二级域名上，具体可以看官方的文档说明：</p>
+<p><a href="https://www.netlify.com/docs/ssl/#netlify-certificates" target="_blank" rel="noopener">SSL / HTTPS | Netlify</a></p>
+<blockquote>
+<h3 id="DOMAIN-ALIASES"><a href="#DOMAIN-ALIASES" class="headerlink" title="DOMAIN ALIASES"></a>DOMAIN ALIASES</h3><p>Your certificate will include all your <a href="https://www.netlify.com/docs/custom-domains/#domain-aliases" target="_blank" rel="noopener">domain aliases</a> when it’s issued, but note that DNS also needs to be configured IN ADVANCE for all aliases for us to include them on your certificate. See <a href="https://www.netlify.com/docs/ssl/#troubleshooting" target="_blank" rel="noopener">the troubleshooting section below</a> for more information on confirming the new configuration.</p>
+</blockquote>
+<p>为了大家能顺利的阅读，翻译成中文如下：</p>
+<blockquote>
+<h3 id="域别名选项"><a href="#域别名选项" class="headerlink" title="域别名选项"></a>域别名选项</h3><p>您的证书在发出时将包含所有<a href="https://www.netlify.com/docs/custom-domains/#domain-aliases" target="_blank" rel="noopener">域别名</a>，但请注意，还需要预先配置DNS，以便我们将所有别名包含在您的证书中。有关确认新配置的更多信息，<a href="https://www.netlify.com/docs/ssl/#troubleshooting" target="_blank" rel="noopener">请参阅下面的故障排除部分</a>。</p>
+</blockquote>
+<p>其实上面的翻译不算准确。准确的说是把域名的主机记录，通过CANME指向它提供二级域名，例如提供给我的netlify二级域名是：<a href="https://shanlan.netlify.com/" target="_blank" rel="noopener">shanlan.netlify.com</a>。其实不把域名的CNAME指向它的二级域名也是可以访问的，只不过它的页面会提示你检查DNS解析配置，如下图 。</p>
+<p><img src="https://user-images.githubusercontent.com/44717382/59403551-9c385a00-8dd5-11e9-90e2-407bd4709f13.png" alt="image"></p>
+<h3 id="那么我为什么还要坚持去使用第三方的域名？"><a href="#那么我为什么还要坚持去使用第三方的域名？" class="headerlink" title="那么我为什么还要坚持去使用第三方的域名？"></a>那么我为什么还要坚持去使用第三方的域名？</h3><p>原因是我需要启用CDN，而CDN分发的时候需要回源。我希望回源能用上https，所以我就需要提供证书给CDN，而使用netlify的证书，我没办法去下载。那么干脆就自己去申请证书然后添加到netlify上面吧。</p>
+<p>腾讯云的免费证书申请方法见我这篇文章：<a href="https://blog.gobyte.cn/post/bc0a861a.html">GitHub pages开启Https、自定义域名和CDN加速</a>，我这里不再赘述。</p>
+</li>
+</ol>
+<h1 id="亚洲诚信的证书如何配置到netlify？"><a href="#亚洲诚信的证书如何配置到netlify？" class="headerlink" title="亚洲诚信的证书如何配置到netlify？"></a>亚洲诚信的证书如何配置到netlify？</h1><p><img src="https://user-images.githubusercontent.com/44717382/59403616-f46f5c00-8dd5-11e9-8daa-149e24c4a6a4.png" alt="image"></p>
+<p>根据上图的netlify添加自定义证书输入框来看，它需要三种数据，分别如下：</p>
+<ol>
+<li>PEM格式证书 .</li>
+<li>私钥KEY</li>
+<li>CA证书链 <em>CA certificate chain</em></li>
+</ol>
+<p><strong>我们来看下从腾讯云下载的亚洲诚信证书的压缩包</strong>：</p>
+<p><img src="https://user-images.githubusercontent.com/44717382/59403714-5760f300-8dd6-11e9-83c9-dd6f0e57f53a.png" alt="image"></p>
+<p>该证书压缩包提供了四种主流服务器程序的证书，分别为：</p>
+<ol>
+<li>apache服务器</li>
+<li>IIS服务器</li>
+<li>nginx服务器</li>
+<li>tomcat 服务器</li>
+</ol>
+<h3 id="我翻遍了这4个文件夹，没有找到-PEM格式的文件"><a href="#我翻遍了这4个文件夹，没有找到-PEM格式的文件" class="headerlink" title="我翻遍了这4个文件夹，没有找到.PEM格式的文件"></a>我翻遍了这4个文件夹，没有找到.PEM格式的文件</h3><p>怎么办？通过查询<a href="https://www.netlify.com/docs/ssl/#custom-certificates" target="_blank" rel="noopener">netlify官方文档</a>，我看到了这样描述：</p>
+<blockquote>
+<h2 id="Custom-Certificates"><a href="#Custom-Certificates" class="headerlink" title="Custom Certificates"></a>Custom Certificates</h2><p>If you already have a certificate for your domain and prefer that to Netlify’s domain-validated certificate, you can install your own.</p>
+<p>To install a certificate, you’ll need:</p>
+<ul>
+<li>the certificate itself, in X.509 PEM format (usually a .crt file)</li>
+<li>the private key you used to request the certificate</li>
+<li>a chain of intermediary certificates from your Certificate Authority (CA)</li>
+</ul>
+</blockquote>
+</li>
+</ol>
+<p>   <strong>翻译成中文如下：</strong></p>
+<blockquote>
+<h2 id="自定义证书"><a href="#自定义证书" class="headerlink" title="自定义证书"></a>自定义证书</h2><p>如果您已拥有域名证书并且更喜欢Netlify的域验证证书，则可以安装自己的证书。</p>
+<p>要安装证书，您需要：</p>
+<ul>
+<li>证书本身，采用X.509 PEM格式（通常为.crt文件）</li>
+<li>您用于请求证书的私钥</li>
+<li>来自证书颁发机构（CA）的一系列中间证书</li>
+</ul>
+</blockquote>
+<p>   上面描述的很清楚，需要PEM格式，通常为.crt文件</p>
+<p>   好的，CRT文件在压缩包里有好2个，分别为apache和nginx里，正好他们两个都有key文件。</p>
+<h3 id="但是，选项3的CA证书链-CA-certificate-chain-去哪里找？"><a href="#但是，选项3的CA证书链-CA-certificate-chain-去哪里找？" class="headerlink" title="但是，选项3的CA证书链 CA certificate chain 去哪里找？"></a>但是，选项3的CA证书链 <em>CA certificate chain</em> 去哪里找？</h3><p>   搜索一番得知，一般会在证书申请成功以后通过email 发送给使用者。但是我看了下腾讯云给我发送的邮件，是没有该内容的。</p>
+<blockquote>
+<p>申请证书后，我们会发一封颁发邮件，在颁发邮件里，有证书链代码，把代码保存为crt后缀的txt文本里就可用了</p>
+</blockquote>
+<p>   终于在耗费两个多小时后，我打开了亚洲诚信的官网，通过在线聊天功能，联系上了他们的技术顾问，并说明了我的情况，在这位技术同学的帮助下，我成功的收到了<a href="https://www.trustasia.com/" target="_blank" rel="noopener">亚洲诚信</a>提供的CA证书链 <em>CA certificate chain</em></p>
+<p>   <img src="https://user-images.githubusercontent.com/44717382/59404058-b8d59180-8dd7-11e9-9cc6-8675795b76f4.png" alt="image"></p>
+<p>   <strong>在这里，由衷的感谢一下技术同学“Huang Nome”的帮助，祝他生活愉快</strong></p>
+<h3 id="开始添加https证书"><a href="#开始添加https证书" class="headerlink" title="开始添加https证书"></a>开始添加https证书</h3><p>   通过尝试apache服务器和nginx服务器的证书，只有nginx文件夹内的证书能添加成功</p>
+<ol>
+<li><p>打开从腾讯云下载的证书压缩包，打开nginx的文件夹</p>
+</li>
+<li><p>以文本模式，打开文件夹内的.CRT文件，并复制粘贴到netlify的PEM输入框内</p>
+</li>
+<li><p>以文本模式，打开文件夹内的.KEY文件，并复制粘贴到netlify的KEY输入框内</p>
+</li>
+<li><p>复制由“亚洲诚信”提供的CA证书链文本，粘贴到netlify的Intermediate certs内</p>
+</li>
+<li><p>点击“Install certificate”完成添加。成功效果图如下：</p>
+<p><img src="https://user-images.githubusercontent.com/44717382/59404271-8b3d1800-8dd8-11e9-82b7-497f1b134a5d.png" alt="image"></p>
+</li>
+</ol>
+<h1 id="CDN设置https回源"><a href="#CDN设置https回源" class="headerlink" title="CDN设置https回源"></a>CDN设置https回源</h1><p>我使用的是腾讯云CDN，操作如下图：</p>
+<p><img src="https://user-images.githubusercontent.com/44717382/59404399-f555bd00-8dd8-11e9-8c30-d24ec0965a05.png" alt="image"></p>
+<hr>
+<p><strong>至此，教程已经结束，感谢阅读。</strong></p>
+
+      
+    </div>
+
+    <div class="article-footer" name="文章脚部">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.gobyte.cn/post/b5463510.html" title="netlify服务器自定义域名添加自定义证书开启HTTPS的正确方法" target="_blank" rel="external">https://blog.gobyte.cn/post/b5463510.html</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/shanlanCoding" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/ha-002-small.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/shanlanCoding" target="_blank"><span class="text-dark">山岚</span><small class="ml-1x">半吊子全栈开发者</small></a></h3>
+        <div>大龄萌新；新时代福娃；喜欢东搞西搞；对待问题有独到的见解；</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+    <div class="bar-inner">
+        
+            <ul class="pager pull-left">
+                
+                    <li class="prev">
+                        <a href="/post/55ff314c.html" title="教你&#34;自定义&#34;选择手机号码"><i
+                                    class="icon icon-angle-left"
+                                    aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+                    </li>
+                
+                
+                    <li class="next">
+                        <a href="/post/bc0a861a.html"
+                           title="GitHub pages开启Https、自定义域名和CDN加速"><span>下一篇&nbsp;&nbsp;</span><i
+                                    class="icon icon-angle-right" aria-hidden="true"></i></a>
+                    </li>
+                
+                
+                    <li class="toggle-toc">
+                        <a class="toggle-btn collapsed" style="color: red" data-toggle="collapse" href="#collapseToc"
+                           aria-expanded="false" title="文章目录" role="button">
+                            <span>[&nbsp;</span><span>文章目录</span>
+                            <i class="text-collapsed icon icon-anchor"></i>
+                            <i class="text-in icon icon-close"></i>
+                            <span>]</span>
+                        </a>
+                    </li>
+                
+            </ul>
+        
+        
+
+        <div class="bar-right">
+            
+        </div>
+    </div>
+</nav>
+  
+
+
+
+  	<script>
+	  <!-- 百度站长自动推送链接 -->
+		(function(){
+		var bp = document.createElement('script');
+		var curProtocol = window.location.protocol.split(':')[0];
+		if (curProtocol === 'https') {
+			bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+		}
+		else {
+			bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		}
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+
+
+	<div class="powered-by" name="不蒜子" sytle="font-size:12px">
+		<i class="icon icon-users"></i>
+		<span id="busuanzi_container_site_uv">
+			总访客 : <span id="busuanzi_value_site_uv"></span>
+		</span><br/>
+		<i class="icon icon-eye-fill"></i>
+		<span id="busuanzi_container_site_pv">
+		    总阅读 : <span id="busuanzi_value_site_pv"></span>
+		</span>
+	</div>
+    
+	<div class="copyright" name="作者">
+		
+		<div class="publishby">
+			Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+		</div>
+	</div>
+
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+
+<script>
+	window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+
+		<!-- 百度统计 -script.ejs --> 
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "https://hm.baidu.com/hm.js?e003775b21b75a71e1396c1fc395cce7";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+
+		<!-- 新浪云防盗链 -->
+		var link = "" ;
+		setTimeout( function(){
+			$("img").each( (i,o) => {
+				var o = $(o);
+				if(o.attr("src").indexOf("sinaimg") > 0 ){
+					o.attr("referrerpolicy","no-referrer");
+					link = o.attr("src");
+					o.attr("src",link);
+				}
+			});
+		},1000);
+
+</script>
+
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+
+	
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+
+  var GUEST = ['nick', 'mail', 'link'];
+
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+
+  var requiredFields = 'mail';
+  requiredFields  = requiredFields.split(',');
+
+
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'X8D7PdERV4O24r3mDuwHflNP-MdYXbMMI',
+    appKey: 'YRKVeK33SutYf7IlMsBlWJI0',
+    placeholder: '正确填写邮箱, 才能及时收到回复哦♪(^∇^*)',
+    avatar: 'robohash',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false,
+    requiredFields: requiredFields,
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

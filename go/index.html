@@ -1,0 +1,216 @@
+<html lang="zh" class="">
+  <head>
+    <meta charset="UTF-8" />
+    <title>测试</title>
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=0.9,minimum-scale=0.5,maximum-scale=1.0,user-scalable=0"
+    />
+
+    <script src="./qrcode.min.js"></script>
+    <style>
+      body {
+        margin-top: 80px;
+      }
+      a,
+      button {
+        font-size: 20px;
+      }
+      td > textarea {
+        width: 100%;
+      }
+      div > img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+    </style>
+  <meta name="generator" content="Hexo 4.2.1"></head>
+
+  <body>
+    <input
+      type="text"
+      id="domain"
+      value="http://192.168.68.217:5500"
+      hidden="true"
+    />
+
+    <table align="center">
+      <!-- 1行 -->
+      <tr align="center">
+        <td colspan="3">
+          <a href="javascript:void(0)" class="weixin-wap-deeplink"
+            >微信支付测试</a
+          >
+        </td>
+      </tr>
+      <tr>
+        <td align="left">支付链接：</td>
+        <td align="left">
+          <textarea type="text" id="wxPayUrl" value="">
+weixin://wap/pay?appid%3Dwxae3e8056daea8727%26noncestr%3D84b64e537f08e81b8dea8cce972a28b2%26package%3DWAP%26prepayid%3Dwx28114114508339b37c1eb65f1978450000%26timestamp%3D1603856474%26sign%3DF5F4AB586F0DFD3FDE84F226F491BF11</textarea
+          >
+          <span style="position: relative"
+            ><img
+              onclick="clearTextFunction()"
+              alt="清除按钮"
+              title="清除并粘贴"
+              style="position: absolute; left: -50px; top: -10px"
+              src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAMAAADXqc3KAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAA7VBMVEUAAABaGBgXCQktDQ00EBBZGRlbGRkMAgIbDg7////BMjJUFhYmCgq7MTESAwO6MDB/IyMHAQG4MDAKAgK2Ly8FAQEPAgITAgIVAwN5ISGWJydLFBR3IiKvLi4ZBgYNAgIbBgYDAAAGAQEIAQEJAQEOAgIAAQEAAQEAAACzKirHMDCBJSUAAACiGxvYIyPJKip5JSUxBgagFRXYISF3JSUsBgbYISEqBgZzJCTFKiooBgaiFhbZICBkISG2JCTXHR3ZISGcFRWhFRUnBgaDJycAAAC3JCTXISF0ERGPFBQwBwcAAAAAAAAAAAD////6E1uqAAAATnRSTlMAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAUZ5FAmT+ZQTMbX5EjH4MRKbMLf9Fab+9761MxMGg/lqozIMFgJaa1pxAAAAAWJLR0QJ8dml7AAAAAd0SU1FB+QKHA4BEB9MD50AAAEiSURBVCjPrZLHdsIwEEWHaoQBY4wLnVBFFdim92I6//87kWyReJ2TWc15dzHv6gjgXycQDIUjUW+PRsKhYIADIYbacSSyVUTxNooJHCRwp9tLAiUiJHvdDk5wkOoPhmQkQToN0ogMB/0UBzIemxaxMwAZm1jmGMscKIAn5pTY2axNpuYE08AbVQM8o2Q+p/kMg6b+FNZdsli4ue4zUQ3Ay9V6vVpiMFS/Yw7lN9vdbrvJo5w/F1mf/eGwZ91Efy7RPsfT6Ui7Sb+kwLzYXbcbNS1wUCydqRftw7pZ5FwqclB2LlfmZRjM9HpxyhxUnNv9Qb1kmZo+7jen8jlSfb7enpcO79ez+sm/oFZvKK6XqjTqNRrwaQpaiz+c0tKE5t8+wjedkydpmUDxAAAAACV0RVh0ZGF0ZTpjcmVhdGUAMjAyMC0wNy0xOVQwMzozOToxOCswMDowMDsHR9gAAAAldEVYdGRhdGU6bW9kaWZ5ADIwMTktMDEtMDhUMTg6NTE6MTMrMDA6MDClZVXAAAAAIHRFWHRzb2Z0d2FyZQBodHRwczovL2ltYWdlbWFnaWNrLm9yZ7zPHZ0AAAAYdEVYdFRodW1iOjpEb2N1bWVudDo6UGFnZXMAMaf/uy8AAAAXdEVYdFRodW1iOjpJbWFnZTo6SGVpZ2h0ADY0vOCphAAAABZ0RVh0VGh1bWI6OkltYWdlOjpXaWR0aAA2NERPaQkAAAAZdEVYdFRodW1iOjpNaW1ldHlwZQBpbWFnZS9wbmc/slZOAAAAF3RFWHRUaHVtYjo6TVRpbWUAMTU0Njk3MzQ3M4rDNfEAAAARdEVYdFRodW1iOjpTaXplADExNTBCILNpTgAAAFp0RVh0VGh1bWI6OlVSSQBmaWxlOi8vL2RhdGEvd3d3cm9vdC93d3cuZWFzeWljb24ubmV0L2Nkbi1pbWcuZWFzeWljb24uY24vZmlsZXMvMTEyLzExMjc4MDMucG5nTzyHsAAAAABJRU5ErkJggg=="
+          /></span>
+        </td>
+        <td align="right">
+          <button type="button" id="startQrBtn" onclick="startQrFunction()">
+            生成
+          </button>
+        </td>
+      </tr>
+      <!-- 2行 -->
+      <tr>
+        <td align="left">尺寸和颜色：</td>
+        <td align="left">
+          <input type="text" id="qrSize" value="400" width="10" />
+          <input type="color" id="qrBgColor" value="#000000" />
+        </td>
+        <td colspan="1" align="right">
+          <button type="button" id="setQrSizeBtn" onclick="setQrSizeFunction()">
+            设置
+          </button>
+        </td>
+      </tr>
+
+      <tr>
+        <td colspan="3">
+          <!-- QR IMG ↓ -->
+          <div
+            id="qrcode"
+            style="
+              border: 1px solid;
+              width: 100%;
+              height: 400px;
+              position: relative;
+            "
+          ></div>
+        </td>
+      </tr>
+    </table>
+  </body>
+
+  <script id="INLINE_PEN_JS_ID">
+    //初始化二维码
+    var qrcode = new QRCode(document.getElementById("qrcode"), {
+      width: 400,
+      height: 400,
+    });
+    //   初始化变量
+    var domain,
+      host,
+      protocol,
+      pathname,
+      wxPayUrl,
+      parameters = "";
+    // 判断当前页面是否带wxPayUrl参数，如果带，则跳转，否则停止
+    parameters = window.location.search;
+    if (parameters.indexOf("go") > -1) {
+      //   修改超级的href
+      document.querySelectorAll(
+        ".weixin-wap-deeplink"
+      )[0].href = decodeURIComponent(getSearchString("go", parameters));
+
+      // 延时打开
+      setTimeout(() => {
+        document.querySelectorAll(".weixin-wap-deeplink")[0].click();
+      }, 1000);
+    } else {
+      document
+        .querySelectorAll(".weixin-wap-deeplink")[0]
+        .setAttribute("hidden", true);
+    }
+
+    // --------工具函数--------
+    //    生成二维码的按钮
+    var startQrFunction = (r) => {
+      domain = document.getElementById("domain").value;
+
+      host = window.location.host;
+
+      protocol = window.location.protocol;
+      //域名后面的html地址
+      pathname = window.location.pathname;
+      wxPayUrl = document.getElementById("wxPayUrl");
+
+      if (!wxPayUrl.value) {
+        alert("你没有输入内容！");
+        wxPayUrl.focus();
+        return;
+      }
+      // let payUrl = domain + wxPayUrl.value;
+      // 域名+网页+参数，本地的话得用domain，这个是在输入框里自定义的
+      // let payUrl = domain + pathname + "?wxPayUrl=" + encodeURIComponent(wxPayUrl.value);
+      // 拼接当前页面跳转
+      // let payUrl =  protocol +  "//" +  host + pathname + "?wxPayUrl=" + encodeURIComponent(wxPayUrl.value);
+      // 指定页面跳转
+      let payUrl =  window.location.href + "go.html?go=" + encodeURIComponent(wxPayUrl.value);
+
+      makeQr(payUrl);
+    };
+
+    //   生成二维码
+    var makeQr = (url) => {
+      qrcode.makeCode(url); // 设置要生成二维码的链接
+    };
+
+    //   调整二维码尺寸
+    var setQrSizeFunction = () => {
+      let size = document.getElementById("qrSize").value;
+
+      let item = document.getElementById("qrcode");
+      item.style.height = size;
+
+      while (item.firstChild) {
+        item.removeChild(item.firstChild);
+      }
+
+      qrcode = new QRCode(document.getElementById("qrcode"), {
+        width: size,
+        height: size,
+        colorDark: document.querySelector("#qrBgColor").value,
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.H,
+      });
+
+      //调整完成后再生成一次
+      startQrFunction();
+    };
+
+    //   微信支付
+    var wxPay = (url) => {
+      document.querySelectorAll(".weixin-wap-deeplink")[0].click();
+    };
+
+    async function clearTextFunction() {
+      let input = document.getElementById("wxPayUrl");
+      input.innerText = "";
+      const text = await navigator.clipboard.readText();
+      input.innerText = text;
+    }
+
+    //   从链接的参数中取值
+    //   key(需要检索的键） url（传入的需要分割的url地址，例：?id=2&age=18）
+    function getSearchString(key, Url) {
+      var str = Url;
+      str = str.substring(1, str.length); // 获取URL中?之后的字符（去掉第一位的问号）
+      // 以&分隔字符串，获得类似name=xiaoli这样的元素数组
+      var arr = str.split("&");
+      var obj = new Object();
+      // 将每一个数组元素以=分隔并赋给obj对象
+      for (var i = 0; i < arr.length; i++) {
+        var tmp_arr = arr[i].split("=");
+        obj[decodeURIComponent(tmp_arr[0])] = decodeURIComponent(tmp_arr[1]);
+      }
+      console.log(obj[key], obj, key);
+      return obj[key];
+    }
+  </script>
+</html>

@@ -1,0 +1,15 @@
+{
+  "deadline": "2020-01-18T12:00:00",
+  "deadlineNew": "2020-05-25T12:00:00",
+  "version": "21",
+  "updateUrl": "",
+  "updateUrl-test": "https://www.lanzous.com/b00n6ngod",
+  "updateInfo": "2月10日发布新版本。\n阅读小子1.21版：\n1.新增IEMI绑定，未绑定IEMI设备将会无法使用，同时由于服务迁移旧版本将会过期失效.2.提升打卡成功的几率\n欢迎大家进群下载体验反馈：438365837",
+  "notice": "",
+  "notice-test": "",
+  "content": "",
+  "qqGroup": "",
+  "qqGroupUrl": "",
+  "content-test": "toastLog('toastLog');",
+  "stauts": "succes"
+}

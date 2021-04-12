@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>React入门学习-State和生命周期 | 山岚 - 90码农历险记</title>
+  <meta name="description" content="先讲几个React常识 React一共有两种组件；而组件类似于函数的概念，它最主要的作用是为了代码复用，拼装你需要的功能，你前期可以这么粗略的理解，但是我相信随着你的学习深入，到了后期又会有不一样的理解。另外，React官方强烈建议：不要创建自己的组件【基类】。 在 React 组件中，代码重用的主要方式是组合而不是继承。 两个组件分别为：函数式组件和Class式组件。函数式组件和原生JavaSc">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React入门学习-State和生命周期">
+<meta property="og:url" content="https://blog.gobyte.cn/post/cc206ca3.html">
+<meta property="og:site_name" content="山岚博客">
+<meta property="og:description" content="先讲几个React常识 React一共有两种组件；而组件类似于函数的概念，它最主要的作用是为了代码复用，拼装你需要的功能，你前期可以这么粗略的理解，但是我相信随着你的学习深入，到了后期又会有不一样的理解。另外，React官方强烈建议：不要创建自己的组件【基类】。 在 React 组件中，代码重用的主要方式是组合而不是继承。 两个组件分别为：函数式组件和Class式组件。函数式组件和原生JavaSc">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2019-08-16T09:20:04.000Z">
+<meta property="article:modified_time" content="2020-05-06T14:54:03.184Z">
+<meta property="article:author" content="山岚">
+<meta property="article:tag" content="React">
+<meta name="twitter:card" content="summary">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.gobyte.cn/post/cc206ca3.html">
+  
+    <link rel="alternate" href="/atom.xml" title="山岚博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/shan-2.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/shanlanCoding" target="_blank">
+          <img class="img-circle img-rotate" src="/images/ha-002-small.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">山岚</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">半吊子全栈开发者</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Work in Home; Home is in 0713</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links/">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>人生短短几个秋</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/windows/">windows</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8F%98%E5%BE%97%E6%9B%B4%E5%A5%BD/">变得更好</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E6%83%85/">心情</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%89%8B%E6%9C%BA/">手机</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B1%82%E8%81%8C/">求职</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%AA%9A%E6%93%8D%E4%BD%9C/">骚操作</a><span class="category-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoJs/" rel="tag">AutoJs</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">Java面试题</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/" rel="tag">Shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/centOS/" rel="tag">centOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E5%9F%BA%E7%A1%80/" rel="tag">java基础</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" rel="tag">java集合框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows-10/" rel="tag">windows 10</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" rel="tag">人脸识别</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" rel="tag">博客优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%90%E6%A7%BD/" rel="tag">吐槽</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E7%B1%B36/" rel="tag">小米6</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" rel="tag">思维改变</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%8B%E6%9C%BA/" rel="tag">手机</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" rel="tag">浏览器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%88%AC%E8%99%AB/" rel="tag">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" rel="tag">自定义手机号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%94%AE%E7%9B%98/" rel="tag">键盘</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/AutoJs/" style="font-size: 13.4px;">AutoJs</a> <a href="/tags/Git/" style="font-size: 13.4px;">Git</a> <a href="/tags/Hexo/" style="font-size: 13.8px;">Hexo</a> <a href="/tags/Java/" style="font-size: 13px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 13.2px;">JavaScript</a> <a href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" style="font-size: 13.6px;">Java面试题</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/Shell/" style="font-size: 13px;">Shell</a> <a href="/tags/centOS/" style="font-size: 13px;">centOS</a> <a href="/tags/java%E5%9F%BA%E7%A1%80/" style="font-size: 13px;">java基础</a> <a href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" style="font-size: 13px;">java集合框架</a> <a href="/tags/linux/" style="font-size: 13px;">linux</a> <a href="/tags/nginx/" style="font-size: 13.2px;">nginx</a> <a href="/tags/vue/" style="font-size: 13px;">vue</a> <a href="/tags/windows-10/" style="font-size: 13px;">windows 10</a> <a href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" style="font-size: 13px;">人脸识别</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" style="font-size: 13px;">博客优化</a> <a href="/tags/%E5%90%90%E6%A7%BD/" style="font-size: 13px;">吐槽</a> <a href="/tags/%E5%B0%8F%E7%B1%B36/" style="font-size: 13px;">小米6</a> <a href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" style="font-size: 13px;">思维改变</a> <a href="/tags/%E6%89%8B%E6%9C%BA/" style="font-size: 13px;">手机</a> <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" style="font-size: 13px;">浏览器</a> <a href="/tags/%E7%88%AC%E8%99%AB/" style="font-size: 13px;">爬虫</a> <a href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" style="font-size: 13px;">自定义手机号</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" style="font-size: 13px;">路由器</a> <a href="/tags/%E9%94%AE%E7%9B%98/" style="font-size: 13px;">键盘</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/cbfeffee.html" class="title">警惕！IKBC机械键盘寿命离谱，满打满算一年不要！入手须慎重！</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-12T09:31:09.000Z" itemprop="datePublished">2021-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Python/">Python</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/615d4220.html" class="title">51cto视频解析下载过程分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-04T10:48:29.000Z" itemprop="datePublished">2021-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/e56fdb88.html" class="title">pure主题valine留言板添加：昵称、邮箱必填必写功能</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-22T12:47:06.000Z" itemprop="datePublished">2020-05-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/5613105b.html" class="title">error:Missmatchins image and device刷机报错解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-06T14:28:21.000Z" itemprop="datePublished">2020-05-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/46726573.html" class="title">解决微软EDGE浏览器在线大声朗读语音卡顿问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-15T15:22:25.000Z" itemprop="datePublished">2020-03-15</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#先讲几个React常识"><span class="toc-number">1.</span> <span class="toc-text">先讲几个React常识</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#生命周期"><span class="toc-number">2.</span> <span class="toc-text">生命周期</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是生命周期？"><span class="toc-number">2.1.</span> <span class="toc-text">什么是生命周期？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#为什么要使用生命周期？"><span class="toc-number">2.2.</span> <span class="toc-text">为什么要使用生命周期？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#挂载-mount"><span class="toc-number">2.3.</span> <span class="toc-text">挂载-mount</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#卸载-unmount"><span class="toc-number">2.4.</span> <span class="toc-text">卸载-unmount</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#State"><span class="toc-number">3.</span> <span class="toc-text">State</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是State？"><span class="toc-number">3.1.</span> <span class="toc-text">什么是State？</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#正确的使用State"><span class="toc-number">4.</span> <span class="toc-text">正确的使用State</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#不要直接修改-State"><span class="toc-number">4.0.1.</span> <span class="toc-text">不要直接修改 State</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#State的更新可能是异步的"><span class="toc-number">4.0.2.</span> <span class="toc-text">State的更新可能是异步的</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#State-的更新会被合并"><span class="toc-number">4.0.3.</span> <span class="toc-text">State 的更新会被合并</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#数据的流动"><span class="toc-number">5.</span> <span class="toc-text">数据的流动</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#完整代码"><span class="toc-number">6.</span> <span class="toc-text">完整代码</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-React入门学习-State和生命周期" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header" name="标题头部>
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      React入门学习-State和生命周期
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/post/cc206ca3.html" class="article-date">
+	  <time datetime="2019-08-16T09:20:04.000Z" itemprop="datePublished">2019-08-16</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/React/" rel="tag">React</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/post/cc206ca3.html#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody" name="正文">
+      
+        <h1 id="先讲几个React常识"><a href="#先讲几个React常识" class="headerlink" title="先讲几个React常识"></a>先讲几个React常识</h1><ol>
+<li><p>React一共有两种组件；而组件类似于函数的概念，它最主要的作用是为了代码复用，拼装你需要的功能，你前期可以这么粗略的理解，但是我相信随着你的学习深入，到了后期又会有不一样的理解。另外，React官方强烈建议：<strong>不要创建自己的组件【基类】。</strong> 在 React 组件中，<a href="https://zh-hans.reactjs.org/docs/composition-vs-inheritance.html" target="_blank" rel="noopener">代码重用的主要方式是组合而不是继承</a>。</p>
+<p>两个组件分别为：<strong>函数式组件</strong>和<strong>Class式组件</strong>。函数式组件和原生JavaScript的函数是相同的，而Class式组件是ES6新增的，大体的作用是引入了面向对象的概念，这是以前没有的。<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/class#语法" target="_blank" rel="noopener">Class语法请参考MDN</a></p>
+</li>
+<li><p>为什么要用Class组件而不是用Function组件呢？使用State、生命周期等新的特性需要用到Class组件。</p>
+</li>
+</ol>
+<h1 id="生命周期"><a href="#生命周期" class="headerlink" title="生命周期"></a>生命周期</h1><h2 id="什么是生命周期？"><a href="#什么是生命周期？" class="headerlink" title="什么是生命周期？"></a>什么是生命周期？</h2><p>每个组件都包含“生命周期方法”，你可以重写这些方法，以便于在运行过程中特定的阶段执行这些方法。<strong>你可以使用此生命周期图谱作为速查表</strong>。在下述列表中，常用的生命周期方法会被加粗。其余生命周期函数的使用则相对罕见。</p>
+<h2 id="为什么要使用生命周期？"><a href="#为什么要使用生命周期？" class="headerlink" title="为什么要使用生命周期？"></a>为什么要使用生命周期？</h2><p>当组件比较多的时候，如果能把不需要使用的组件销毁掉，可以释放非常宝贵的系统资源。说人话就是不要的东西丢垃圾桶里，释放你家里宝贵的可用空间。应用场景例如：当页面有一个定时器，我们这个定时器使用完毕以后应该去销毁，以释放内存，所以这个时候可以用上生命周期方法。</p>
+<h2 id="挂载-mount"><a href="#挂载-mount" class="headerlink" title="挂载-mount"></a>挂载-mount</h2><p>当 <code>Clock</code> 组件第一次被渲染到 DOM 中的时候，就为其<a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/setInterval" target="_blank" rel="noopener">设置一个计时器</a>。这在 React 中被称为“挂载（mount）”。</p>
+<p>当组件实例被创建并插入 DOM 中时，其生命周期调用顺序如下：</p>
+<ol>
+<li><a href="https://zh-hans.reactjs.org/docs/react-component.html#constructor" target="_blank" rel="noopener"><strong>constructor()</strong></a></li>
+<li><a href="https://zh-hans.reactjs.org/docs/react-component.html#static-getderivedstatefromprops" target="_blank" rel="noopener"><code>static getDerivedStateFromProps()</code></a></li>
+<li><a href="https://zh-hans.reactjs.org/docs/react-component.html#render" target="_blank" rel="noopener"><strong>render()</strong></a></li>
+<li><a href="https://zh-hans.reactjs.org/docs/react-component.html#componentdidmount" target="_blank" rel="noopener"><strong>componentDidMount()</strong></a></li>
+</ol>
+<blockquote>
+<p>注意:</p>
+<p>下述生命周期方法即将过时，在新代码中应该<a href="https://zh-hans.reactjs.org/blog/2018/03/27/update-on-async-rendering.html" target="_blank" rel="noopener">避免使用它们</a>：</p>
+<ul>
+<li><a href="https://zh-hans.reactjs.org/docs/react-component.html#unsafe_componentwillmount" target="_blank" rel="noopener"><code>UNSAFE_componentWillMount()</code></a></li>
+</ul>
+</blockquote>
+<h2 id="卸载-unmount"><a href="#卸载-unmount" class="headerlink" title="卸载-unmount"></a>卸载-unmount</h2><p>同时，当 DOM 中 <code>Clock</code> 组件被删除的时候，应该<a href="https://developer.mozilla.org/en-US/docs/Web/API/WindowTimers/clearInterval" target="_blank" rel="noopener">清除计时器</a>。这在 React 中被称为“卸载（unmount）”。当组件从 DOM 中移除时会调用如下方法：</p>
+<ul>
+<li><a href="https://zh-hans.reactjs.org/docs/react-component.html#componentwillunmount" target="_blank" rel="noopener"><strong>componentWillUnmount()</strong></a></li>
+</ul>
+<p><strong>除了挂载和卸载，还有<a href="https://zh-hans.reactjs.org/docs/react-component.html#updating" target="_blank" rel="noopener">更新</a>，有兴趣你也可以点击学习。上面的两种方法，都称为“生命周期方法”</strong></p>
+<h1 id="State"><a href="#State" class="headerlink" title="State"></a>State</h1><h2 id="什么是State？"><a href="#什么是State？" class="headerlink" title="什么是State？"></a>什么是State？</h2><p>本次学习后我对State的理解为它是用来保存一些你需要数据的变量，而<strong>子组件</strong>可以在这个变量里提取你<strong>在父组件里</strong>传递的数据，类似一个存<strong>数据的容器</strong>，仅此而已。</p>
+<h1 id="正确的使用State"><a href="#正确的使用State" class="headerlink" title="正确的使用State"></a>正确的使用State</h1><p>关于 <code>setState()</code> 你应该了解三件事：</p>
+<h3 id="不要直接修改-State"><a href="#不要直接修改-State" class="headerlink" title="不要直接修改 State"></a>不要直接修改 State</h3><p>例如，此代码不会重新渲染组件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 错误的</span><br><span class="line">this.state.comment  = &quot;你好&quot;;</span><br></pre></td></tr></table></figure>
+
+<p>而是应该使用<code>setState()</code></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">// 正确的</span><br><span class="line">this.setState(&#123;comment: &quot;你好&quot;&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>另外<strong>构造函数constructor</strong>是唯一可以给 <code>this.state</code> 赋值的地方：</p>
+<h3 id="State的更新可能是异步的"><a href="#State的更新可能是异步的" class="headerlink" title="State的更新可能是异步的"></a>State的更新可能是异步的</h3><p>出于性能考虑，React 可能会把多个 <code>setState()</code> 调用合并成一个调用。</p>
+<p>因为 <code>this.props</code> 和 <code>this.state</code> 可能会异步更新，所以你不要依赖他们的值来更新下一个状态。</p>
+<p>例如，此代码可能会无法更新计数器：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 错误</span><br><span class="line">this.setState(&#123;</span><br><span class="line">  counter: this.state.counter + this.props.increment,</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>要解决这个问题，可以让 <code>setState()</code> 接收一个函数而不是一个对象。这个函数用上一个 state 作为第一个参数，将此次更新被应用时的 props 做为第二个参数：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 正确</span><br><span class="line">this.setState((state, props) =&gt; (&#123;</span><br><span class="line">  counter: state.counter + props.increment</span><br><span class="line">&#125;));</span><br></pre></td></tr></table></figure>
+
+<p>上面使用了<a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Functions/Arrow_functions" target="_blank" rel="noopener">箭头函数</a>，不过使用普通的函数也同样可以：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">// 正确</span><br><span class="line">this.setState(function(state, props) &#123;</span><br><span class="line">  return &#123;</span><br><span class="line">    counter: state.counter + props.increment</span><br><span class="line">  &#125;;</span><br><span class="line">&#125;);</span><br></pre></td></tr></table></figure>
+
+<h3 id="State-的更新会被合并"><a href="#State-的更新会被合并" class="headerlink" title="State 的更新会被合并"></a>State 的更新会被合并</h3><p>当你调用 <code>setState()</code> 的时候，React 会把你提供的对象合并到当前的 state。</p>
+<p>例如，你的 state 包含几个独立的变量：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">this.state = &#123;</span><br><span class="line">  title : &apos;React&apos;,</span><br><span class="line">  content : &apos;React is an wonderful JS library!&apos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>当只需要修改状态<code>title</code>时，只需要将修改后的<code>title</code>传给<code>setState</code>：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">this.setState(&#123;title: &apos;ReactJs&apos;&#125;);</span><br></pre></td></tr></table></figure>
+
+<p>React会合并新的<code>title</code>到原来的组件状态中，同时保留原有的状态<code>content</code>，合并后的State为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  title : &apos;ReactJs&apos;,</span><br><span class="line">  content : &apos;React is an wonderful JS library!&apos;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>所以 <code>this.setState({title})</code> 替换了原来的“React”，但是”Content”的内容没有修改。</p>
+<h1 id="数据的流动"><a href="#数据的流动" class="headerlink" title="数据的流动"></a>数据的流动</h1><p>不管是父组件还是子组件都无法知道某个组件是有状态还是无状态的，并且也不关心它是函数式组件还是Class组件。</p>
+<p>这就是为什么称State为局部的或者是封装的原因。除了拥有并设置了它的组件，其它组件都无法访问。</p>
+<p>组件可以选择把它的State作为props向下传递到它的子组件中：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;h1&gt; 现在是北京时间： &#123;this.state.date.toLocaleTimeString() &#125; &lt;/h2&gt;</span><br></pre></td></tr></table></figure>
+
+<p> 也可以用在自定义的组件上：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;FormattedDate date = &#123; this.state.date &#125; /&gt;</span><br></pre></td></tr></table></figure>
+
+<p>FormattedDate组件会在它的props中接收参数Date，但是组件本身无法知道它是来自于<code>Clock</code>的state，或者<code>Clock</code>的props，又或者是手动输入的：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">function FormattedDate(props) &#123;</span><br><span class="line">  return &lt;h2&gt;现在是北京时间： &#123;props.date.toLocaleTimeString()&#125;&lt;/h2&gt;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这种叫做“自上而下”或者“单向”数据流。任何的State总是所属于特定的组件，而且该State派生的任何数据或者UI只能影响“低于”他们的组件。</p>
+<p>如果你把一个以组件构成的树，想象成一个props的数据瀑布的话，那么每一个组件的State就像是在任意一个点上给瀑布增加额外的水源，但是它只能向下流动。</p>
+<p>为了证明每个组件都是真正独立的，我们可以创建一个渲染三个 <code>Clock</code> 的 <code>App</code>组件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">function App() &#123;</span><br><span class="line">  return (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;Clock /&gt;</span><br><span class="line">      &lt;Clock /&gt;</span><br><span class="line">      &lt;Clock /&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">ReactDOM.render(</span><br><span class="line">  &lt;App /&gt;,</span><br><span class="line">  document.getElementById(&apos;root&apos;)</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<p>每个 <code>Clock</code> 组件都会单独设置它自己的计时器并且更新它。</p>
+<p>在 React 应用中，组件是有状态组件还是无状态组件属于组件实现的细节，它可能会随着时间的推移而改变。你可以在有状态的组件中使用无状态的组件，反之亦然。</p>
+<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br></pre></td><td class="code"><pre><span class="line">// 函数式组件</span><br><span class="line">function Clock1(props)&#123;</span><br><span class="line">  return(</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;h1&gt;你好，朋友&lt;/h1&gt;</span><br><span class="line">      &lt;h2&gt;现在是&#123; props.date.toLocaleTimeString() &#125;&lt;/h2&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// Class式组件</span><br><span class="line">class Clock2 extends React.Component&#123;</span><br><span class="line">  // 构造函数默认加载并执行一次，起到传递数据的作用</span><br><span class="line">  constructor(props)&#123;</span><br><span class="line">    // 获取父类的数据；Class 组件应该始终使用 props 参数来调用父类的构造函数。</span><br><span class="line">    super(props);</span><br><span class="line">    // 添加一个data到state内</span><br><span class="line">    this.state = &#123; date : new Date() &#125;;</span><br><span class="line">  &#125;</span><br><span class="line">  // 生命周期-挂载-渲染后运行；可以用来加装定时器等作用</span><br><span class="line">  componentDidMount()&#123;</span><br><span class="line">    // 添加定时器,接受返回ID</span><br><span class="line">    this.timerID = setInterval(</span><br><span class="line">      () =&gt; this.tick(),1000</span><br><span class="line">    );</span><br><span class="line"></span><br><span class="line">  &#125;</span><br><span class="line">  // 生命周期-卸载-</span><br><span class="line">  componentWillUnmount()&#123;</span><br><span class="line">    // 清除定时器</span><br><span class="line">    clearInterval(this.timerID);</span><br><span class="line">  &#125;</span><br><span class="line">  // 修改时间</span><br><span class="line">  tick()&#123;</span><br><span class="line">    // 修改data数据</span><br><span class="line">    this.setState(&#123;</span><br><span class="line">      date: new Date()</span><br><span class="line">    &#125;);</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  // 渲染</span><br><span class="line">  render()&#123;</span><br><span class="line">    return(</span><br><span class="line">      &lt;div&gt;</span><br><span class="line">        &lt;h2&gt;现在是&#123; this.state.date.toLocaleTimeString() &#125;&lt;/h2&gt;</span><br><span class="line">        &lt;FormattedDate date = &#123; this.state.date &#125;/&gt;</span><br><span class="line">      &lt;/div&gt;</span><br><span class="line">    );</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">// Class组件-end</span><br><span class="line"></span><br><span class="line">// 多个组件渲染，他们是相互独立的</span><br><span class="line">function App()&#123;</span><br><span class="line">  return (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">      &lt;Clock2 /&gt;  </span><br><span class="line">      &lt;span&gt;---&lt;/span&gt;</span><br><span class="line">      &lt;Clock2 /&gt;</span><br><span class="line">      &lt;span&gt;---&lt;/span&gt;</span><br><span class="line">      &lt;Clock2 /&gt;</span><br><span class="line">      &lt;span&gt;---&lt;/span&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 自定义函数式组件，从父级获取参数</span><br><span class="line">function FormattedDate(props) &#123;</span><br><span class="line">  return &lt;h2&gt;第二种 &#123; props.date.toLocaleTimeString() &#125; &lt;/h2&gt;;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// 渲染</span><br><span class="line">ReactDOM.render(</span><br><span class="line">  &lt;App /&gt;,</span><br><span class="line">  document.getElementById(&apos;root&apos;)</span><br><span class="line">);</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">// </span><br><span class="line">let  node = &#123;</span><br><span class="line">  type : &quot;解构&quot;,</span><br><span class="line">  name : &quot;解构测试&quot;</span><br><span class="line">&#125;;</span><br><span class="line">// (&#123;type，name&#125;) = node;//&#123;&#125;在js中作为代码块，单独使用加等号会报错会报错</span><br><span class="line"></span><br><span class="line">let &#123; type:Type , name:Name &#125; = node;</span><br><span class="line">let i = 0;</span><br><span class="line">console.log(Type + i++);</span><br><span class="line">console.log(Name + i++); </span><br><span class="line"></span><br><span class="line">let &#123; type:myType , name:myName &#125; = node;</span><br><span class="line">console.log(myType + i++);</span><br><span class="line">console.log(myName + i++);</span><br></pre></td></tr></table></figure>
+
+
+      
+    </div>
+
+    <div class="article-footer" name="文章脚部">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.gobyte.cn/post/cc206ca3.html" title="React入门学习-State和生命周期" target="_blank" rel="external">https://blog.gobyte.cn/post/cc206ca3.html</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/shanlanCoding" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/ha-002-small.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/shanlanCoding" target="_blank"><span class="text-dark">山岚</span><small class="ml-1x">半吊子全栈开发者</small></a></h3>
+        <div>大龄萌新；新时代福娃；喜欢东搞西搞；对待问题有独到的见解；</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+    <div class="bar-inner">
+        
+            <ul class="pager pull-left">
+                
+                    <li class="prev">
+                        <a href="/post/c7144fb7.html" title="Clover资源管理器你在干什么？"><i
+                                    class="icon icon-angle-left"
+                                    aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+                    </li>
+                
+                
+                    <li class="next">
+                        <a href="/post/e569aec3.html"
+                           title="待解决的问题"><span>下一篇&nbsp;&nbsp;</span><i
+                                    class="icon icon-angle-right" aria-hidden="true"></i></a>
+                    </li>
+                
+                
+                    <li class="toggle-toc">
+                        <a class="toggle-btn collapsed" style="color: red" data-toggle="collapse" href="#collapseToc"
+                           aria-expanded="false" title="文章目录" role="button">
+                            <span>[&nbsp;</span><span>文章目录</span>
+                            <i class="text-collapsed icon icon-anchor"></i>
+                            <i class="text-in icon icon-close"></i>
+                            <span>]</span>
+                        </a>
+                    </li>
+                
+            </ul>
+        
+        
+
+        <div class="bar-right">
+            
+        </div>
+    </div>
+</nav>
+  
+
+
+
+  	<script>
+	  <!-- 百度站长自动推送链接 -->
+		(function(){
+		var bp = document.createElement('script');
+		var curProtocol = window.location.protocol.split(':')[0];
+		if (curProtocol === 'https') {
+			bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+		}
+		else {
+			bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		}
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+
+
+	<div class="powered-by" name="不蒜子" sytle="font-size:12px">
+		<i class="icon icon-users"></i>
+		<span id="busuanzi_container_site_uv">
+			总访客 : <span id="busuanzi_value_site_uv"></span>
+		</span><br/>
+		<i class="icon icon-eye-fill"></i>
+		<span id="busuanzi_container_site_pv">
+		    总阅读 : <span id="busuanzi_value_site_pv"></span>
+		</span>
+	</div>
+    
+	<div class="copyright" name="作者">
+		
+		<div class="publishby">
+			Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+		</div>
+	</div>
+
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+
+<script>
+	window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+
+		<!-- 百度统计 -script.ejs --> 
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "https://hm.baidu.com/hm.js?e003775b21b75a71e1396c1fc395cce7";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+
+		<!-- 新浪云防盗链 -->
+		var link = "" ;
+		setTimeout( function(){
+			$("img").each( (i,o) => {
+				var o = $(o);
+				if(o.attr("src").indexOf("sinaimg") > 0 ){
+					o.attr("referrerpolicy","no-referrer");
+					link = o.attr("src");
+					o.attr("src",link);
+				}
+			});
+		},1000);
+
+</script>
+
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+
+	
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+
+  var GUEST = ['nick', 'mail', 'link'];
+
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+
+  var requiredFields = 'mail';
+  requiredFields  = requiredFields.split(',');
+
+
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'X8D7PdERV4O24r3mDuwHflNP-MdYXbMMI',
+    appKey: 'YRKVeK33SutYf7IlMsBlWJI0',
+    placeholder: '正确填写邮箱, 才能及时收到回复哦♪(^∇^*)',
+    avatar: 'robohash',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false,
+    requiredFields: requiredFields,
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

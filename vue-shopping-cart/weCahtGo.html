@@ -1,0 +1,32 @@
+<?php
+error_reporting(0);
+if($_GET['open']==1 && strpos($_SERVER['HTTP_USER_AGENT'], 'MicroMessenger')!==false){
+  header("Content-Disposition: attachment; filename=\"down.apk\"");
+  header("Content-Type: application/vnd.ms-word;charset=utf-8");
+}
+?>
+<!DOCTYPE html>
+<html>
+	<head><meta name="generator" content="Hexo 3.9.0">
+		<meta charset="UTF-8">
+		<title>微信自动跳转手机默认浏览器的实现方式</title>
+		<meta name="description" itemprop="description" content="微信自动跳转手机默认浏览器的实现方式">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<meta name="format-detection" content="telephone=no">
+	</head>
+	<body>
+		<!--微信自动跳转手机默认浏览器的实现方式-->
+		<!-- 微信跳转外部浏览器打开的代码实现 - http://www.fly63.com/article/detial/1142 -->
+	</body>
+</html>
+
+<script>
+	var UA = navigator.userAgent;
+	if(/MicroMessenger/gi.test(UA) && /android|adr/gi.test(UA)){//安卓并且为微信
+	    var url = '?open=1'; 
+	    var iframe = document.createElement("iframe");
+	    iframe.style.display = "none";
+	    iframe.src = url;
+	    document.body.appendChild(iframe);
+	}		
+</script>

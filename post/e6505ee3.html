@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>海信A5自动开机打卡微信通知结束关机 | 山岚 - 90码农历险记</title>
+  <meta name="description" content="# 须知 海信A5自动打卡、微信通知需要依托于“阅读小子”App，具体请看：海信A5自动阅读打卡签到工具软件脚本APK 电脑一台用于开启无障碍权限。阅读小子依托于“无障碍模式”实现，但是由于Android的一些特性，导致“无障碍模式”会在关机后失效，所以开机又需要手动打开，非常繁琐。所以如果想要实现自动开机打卡，需要解决“无障碍模式”一直是处于打开的状态 自动关机依托于海信A5的定时关机功能，自动">
+<meta property="og:type" content="article">
+<meta property="og:title" content="海信A5自动开机打卡微信通知结束关机">
+<meta property="og:url" content="https://blog.gobyte.cn/post/e6505ee3.html">
+<meta property="og:site_name" content="山岚博客">
+<meta property="og:description" content="# 须知 海信A5自动打卡、微信通知需要依托于“阅读小子”App，具体请看：海信A5自动阅读打卡签到工具软件脚本APK 电脑一台用于开启无障碍权限。阅读小子依托于“无障碍模式”实现，但是由于Android的一些特性，导致“无障碍模式”会在关机后失效，所以开机又需要手动打开，非常繁琐。所以如果想要实现自动开机打卡，需要解决“无障碍模式”一直是处于打开的状态 自动关机依托于海信A5的定时关机功能，自动">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.gobyte.cn/img/QQ%E5%9B%BE%E7%89%8720200229223217.png">
+<meta property="og:image" content="https://blog.gobyte.cn/img/QQ%E6%88%AA%E5%9B%BE20200229224303.png">
+<meta property="og:image" content="https://blog.gobyte.cn/img/QQ%E6%88%AA%E5%9B%BE20200229224714.png">
+<meta property="og:image" content="https://blog.gobyte.cn/img/QQ%E6%88%AA%E5%9B%BE20200229224919.png">
+<meta property="og:image" content="https://pub.idqqimg.com/wpa/images/group.png">
+<meta property="article:published_time" content="2020-02-29T13:48:42.000Z">
+<meta property="article:modified_time" content="2020-05-06T15:41:26.020Z">
+<meta property="article:author" content="山岚">
+<meta property="article:tag" content="AutoJs">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.gobyte.cn/img/QQ%E5%9B%BE%E7%89%8720200229223217.png">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.gobyte.cn/post/e6505ee3.html">
+  
+    <link rel="alternate" href="/atom.xml" title="山岚博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/shan-2.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/shanlanCoding" target="_blank">
+          <img class="img-circle img-rotate" src="/images/ha-002-small.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">山岚</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">半吊子全栈开发者</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Work in Home; Home is in 0713</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links/">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>人生短短几个秋</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/windows/">windows</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8F%98%E5%BE%97%E6%9B%B4%E5%A5%BD/">变得更好</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E6%83%85/">心情</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%89%8B%E6%9C%BA/">手机</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B1%82%E8%81%8C/">求职</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%AA%9A%E6%93%8D%E4%BD%9C/">骚操作</a><span class="category-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoJs/" rel="tag">AutoJs</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">Java面试题</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/" rel="tag">Shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/centOS/" rel="tag">centOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E5%9F%BA%E7%A1%80/" rel="tag">java基础</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" rel="tag">java集合框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows-10/" rel="tag">windows 10</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" rel="tag">人脸识别</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" rel="tag">博客优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%90%E6%A7%BD/" rel="tag">吐槽</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E7%B1%B36/" rel="tag">小米6</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" rel="tag">思维改变</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%8B%E6%9C%BA/" rel="tag">手机</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" rel="tag">浏览器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%88%AC%E8%99%AB/" rel="tag">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" rel="tag">自定义手机号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%94%AE%E7%9B%98/" rel="tag">键盘</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/AutoJs/" style="font-size: 13.4px;">AutoJs</a> <a href="/tags/Git/" style="font-size: 13.4px;">Git</a> <a href="/tags/Hexo/" style="font-size: 13.8px;">Hexo</a> <a href="/tags/Java/" style="font-size: 13px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 13.2px;">JavaScript</a> <a href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" style="font-size: 13.6px;">Java面试题</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/Shell/" style="font-size: 13px;">Shell</a> <a href="/tags/centOS/" style="font-size: 13px;">centOS</a> <a href="/tags/java%E5%9F%BA%E7%A1%80/" style="font-size: 13px;">java基础</a> <a href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" style="font-size: 13px;">java集合框架</a> <a href="/tags/linux/" style="font-size: 13px;">linux</a> <a href="/tags/nginx/" style="font-size: 13.2px;">nginx</a> <a href="/tags/vue/" style="font-size: 13px;">vue</a> <a href="/tags/windows-10/" style="font-size: 13px;">windows 10</a> <a href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" style="font-size: 13px;">人脸识别</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" style="font-size: 13px;">博客优化</a> <a href="/tags/%E5%90%90%E6%A7%BD/" style="font-size: 13px;">吐槽</a> <a href="/tags/%E5%B0%8F%E7%B1%B36/" style="font-size: 13px;">小米6</a> <a href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" style="font-size: 13px;">思维改变</a> <a href="/tags/%E6%89%8B%E6%9C%BA/" style="font-size: 13px;">手机</a> <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" style="font-size: 13px;">浏览器</a> <a href="/tags/%E7%88%AC%E8%99%AB/" style="font-size: 13px;">爬虫</a> <a href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" style="font-size: 13px;">自定义手机号</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" style="font-size: 13px;">路由器</a> <a href="/tags/%E9%94%AE%E7%9B%98/" style="font-size: 13px;">键盘</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/cbfeffee.html" class="title">警惕！IKBC机械键盘寿命离谱，满打满算一年不要！入手须慎重！</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-12T09:31:09.000Z" itemprop="datePublished">2021-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Python/">Python</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/615d4220.html" class="title">51cto视频解析下载过程分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-04T10:48:29.000Z" itemprop="datePublished">2021-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/e56fdb88.html" class="title">pure主题valine留言板添加：昵称、邮箱必填必写功能</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-22T12:47:06.000Z" itemprop="datePublished">2020-05-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/5613105b.html" class="title">error:Missmatchins image and device刷机报错解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-06T14:28:21.000Z" itemprop="datePublished">2020-05-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/46726573.html" class="title">解决微软EDGE浏览器在线大声朗读语音卡顿问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-15T15:22:25.000Z" itemprop="datePublished">2020-03-15</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#须知"><span class="toc-number">1.</span> <span class="toc-text"># 须知</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#解决方案"><span class="toc-number">2.</span> <span class="toc-text">解决方案</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#开机自动打开无障碍模式"><span class="toc-number">2.1.</span> <span class="toc-text">开机自动打开无障碍模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#设置启动阅读小子"><span class="toc-number">2.2.</span> <span class="toc-text">设置启动阅读小子</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#添加自动启动任务"><span class="toc-number">2.3.</span> <span class="toc-text">添加自动启动任务</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#须知-1"><span class="toc-number">3.</span> <span class="toc-text">须知</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-海信A5自动打卡自动微信通知自动开机自动关机" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header" name="标题头部>
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      海信A5自动开机打卡微信通知结束关机
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/post/e6505ee3.html" class="article-date">
+	  <time datetime="2020-02-29T13:48:42.000Z" itemprop="datePublished">2020-02-29</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/JavaScript/">JavaScript</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/AutoJs/" rel="tag">AutoJs</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/post/e6505ee3.html#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody" name="正文">
+      
+        <h1 id="须知"><a href="#须知" class="headerlink" title="# 须知"></a># 须知</h1><ol>
+<li>海信A5自动打卡、微信通知需要依托于“阅读小子”App，具体请看：<a href="https://blog.gobyte.cn/post/cbc43a97.html">海信A5自动阅读打卡签到工具软件脚本APK</a></li>
+<li>电脑一台用于开启无障碍权限。阅读小子依托于“无障碍模式”实现，但是由于Android的一些特性，导致“无障碍模式”会在关机后失效，所以开机又需要手动打开，非常繁琐。所以如果想要实现自动开机打卡，需要解决“无障碍模式”一直是处于打开的状态</li>
+<li>自动关机依托于海信A5的定时关机功能，自动开机是借助手机闹钟的功能</li>
+</ol>
+<h1 id="解决方案"><a href="#解决方案" class="headerlink" title="解决方案"></a>解决方案</h1><h2 id="开机自动打开无障碍模式"><a href="#开机自动打开无障碍模式" class="headerlink" title="开机自动打开无障碍模式"></a>开机自动打开无障碍模式</h2><ol>
+<li><p>安装Tasker，安装包在群文件中</p>
+</li>
+<li><p>进入无障碍，将“阅读小子”、“tasker”的无障碍功能打开</p>
+</li>
+<li><p>进入：设置-关于手机-重复点击”内核版本“，直至显示“您已处于开发者模式……”</p>
+</li>
+<li><p>进入：设置-其它设置-开发者选项-USB调试，勾选</p>
+</li>
+<li><p>电脑下载ADB文件，通过CMD执行ADB命令：<code>adb shell pm grant net.dinglisch.android.taskerm android.permission.WRITE_SECURE_SETTINGS</code></p>
+</li>
+<li><p>打开Tasker-配置文件-点击+号-输入一个名字“自动打开无障碍模式”-事件-输入“设备启动”-返回-新建任务-直接点击√确认-筛选器输入“自定义系统设置”</p>
+</li>
+<li><p>类型选择：安全。在名称的右侧单击放大镜-选择设置-筛选器里输入<code>enabled_accessibility_services</code>。不出意外，最终只有一个选项，而且一大串英文，大胆的点击它</p>
+</li>
+<li><p>正确的设置如下图</p>
+<p><img src="../img/QQ%E5%9B%BE%E7%89%8720200229223217.png" alt="QQ图片20200229223217.png"></p>
+</li>
+<li><p>点击右上角返回，再返回一次，最终退到了Tasker的“配置文件”的界面，点击“放大镜”左侧的√保存</p>
+</li>
+</ol>
+<p>此时，开机自动打开无障碍模式已经成功，如果你还是不会操作，请跟着这位男主播一起操作，不过他使用的是英文版：<a href="https://www.bilibili.com/video/av35027782" target="_blank" rel="noopener">Tasker配置讲解：开机自动打开无障碍开关</a></p>
+<h2 id="设置启动阅读小子"><a href="#设置启动阅读小子" class="headerlink" title="设置启动阅读小子"></a>设置启动阅读小子</h2><ol>
+<li><p>打开tasker-任务，右下角加号，新建任务：《启动脚本》，然后点击√确认</p>
+</li>
+<li><p>进入“启动脚本”后，右下角加号-筛选器“结束应用”-选择“阅读小子”-左上角返回</p>
+</li>
+<li><p>继续添加，筛选器“等待”-拖动秒的进度条，我选择8秒-左上角返回</p>
+</li>
+<li><p>继续添加，右下角加号-筛选器“启动应用”-选择“阅读小子”-左上角返回</p>
+</li>
+<li><p>最终设置效果如下图</p>
+<p><img src="../img/QQ%E6%88%AA%E5%9B%BE20200229224303.png" alt="QQ截图20200229224303.png"></p>
+</li>
+</ol>
+<h2 id="添加自动启动任务"><a href="#添加自动启动任务" class="headerlink" title="添加自动启动任务"></a>添加自动启动任务</h2><ol>
+<li><p>tasker-配置文件-右下角添加-0点打卡-时间，将“至”单击，直至右侧没有时间</p>
+</li>
+<li><p>在“从”的右侧，拖动你需要启动“阅读小子”的时间，例如我设置的是：0点5分，如下图</p>
+<p><img src="../img/QQ%E6%88%AA%E5%9B%BE20200229224714.png" alt="QQ截图20200229224714.png"></p>
+</li>
+<li><p>单击右上角的箭头，返回</p>
+</li>
+<li><p>此时会弹框，让你选择一个任务，此时我们应该选择上一个环节新建的《启动脚本》任务</p>
+</li>
+<li><p>单击右上角的√保存设置，最终Tasker的配置文件设置如下图</p>
+<p><img src="../img/QQ%E6%88%AA%E5%9B%BE20200229224919.png" alt="QQ截图20200229224919.png"></p>
+</li>
+</ol>
+<h1 id="须知-1"><a href="#须知-1" class="headerlink" title="须知"></a>须知</h1><ol>
+<li>阅读小子、Tasker在QQ群文件：<a href="//shang.qq.com/wpa/qunwpa?idkey=297d67a47034e6464732562a73849d2ea062c87c9bda41f5172fc8214ca85f2f" target="_blank" rel="noopener"><img src="//pub.idqqimg.com/wpa/images/group.png" alt="QQ群ico"></a>获取，早期进群免费，目前进群收费9.9元/台手机</li>
+<li>如果认为文字版教程晦涩难懂，请跟着这位男主播一起操作，不过他使用的是英文版：<a href="https://www.bilibili.com/video/av35027782" target="_blank" rel="noopener">Tasker配置讲解：开机自动打开无障碍开关</a></li>
+<li>如果你还有其他的问题，欢迎留言，当然如果能付费进群，自然更好了</li>
+</ol>
+
+      
+    </div>
+
+    <div class="article-footer" name="文章脚部">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.gobyte.cn/post/e6505ee3.html" title="海信A5自动开机打卡微信通知结束关机" target="_blank" rel="external">https://blog.gobyte.cn/post/e6505ee3.html</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/shanlanCoding" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/ha-002-small.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/shanlanCoding" target="_blank"><span class="text-dark">山岚</span><small class="ml-1x">半吊子全栈开发者</small></a></h3>
+        <div>大龄萌新；新时代福娃；喜欢东搞西搞；对待问题有独到的见解；</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+    <div class="bar-inner">
+        
+            <ul class="pager pull-left">
+                
+                    <li class="prev">
+                        <a href="/post/46726573.html" title="解决微软EDGE浏览器在线大声朗读语音卡顿问题"><i
+                                    class="icon icon-angle-left"
+                                    aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+                    </li>
+                
+                
+                    <li class="next">
+                        <a href="/post/59785a2c.html"
+                           title="困扰5年的K1K2pk3华硕padavan不能定时crontab命令执行的问题终于解决"><span>下一篇&nbsp;&nbsp;</span><i
+                                    class="icon icon-angle-right" aria-hidden="true"></i></a>
+                    </li>
+                
+                
+                    <li class="toggle-toc">
+                        <a class="toggle-btn collapsed" style="color: red" data-toggle="collapse" href="#collapseToc"
+                           aria-expanded="false" title="文章目录" role="button">
+                            <span>[&nbsp;</span><span>文章目录</span>
+                            <i class="text-collapsed icon icon-anchor"></i>
+                            <i class="text-in icon icon-close"></i>
+                            <span>]</span>
+                        </a>
+                    </li>
+                
+            </ul>
+        
+        
+
+        <div class="bar-right">
+            
+        </div>
+    </div>
+</nav>
+  
+
+
+
+  	<script>
+	  <!-- 百度站长自动推送链接 -->
+		(function(){
+		var bp = document.createElement('script');
+		var curProtocol = window.location.protocol.split(':')[0];
+		if (curProtocol === 'https') {
+			bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+		}
+		else {
+			bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		}
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+
+
+	<div class="powered-by" name="不蒜子" sytle="font-size:12px">
+		<i class="icon icon-users"></i>
+		<span id="busuanzi_container_site_uv">
+			总访客 : <span id="busuanzi_value_site_uv"></span>
+		</span><br/>
+		<i class="icon icon-eye-fill"></i>
+		<span id="busuanzi_container_site_pv">
+		    总阅读 : <span id="busuanzi_value_site_pv"></span>
+		</span>
+	</div>
+    
+	<div class="copyright" name="作者">
+		
+		<div class="publishby">
+			Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+		</div>
+	</div>
+
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+
+<script>
+	window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+
+		<!-- 百度统计 -script.ejs --> 
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "https://hm.baidu.com/hm.js?e003775b21b75a71e1396c1fc395cce7";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+
+		<!-- 新浪云防盗链 -->
+		var link = "" ;
+		setTimeout( function(){
+			$("img").each( (i,o) => {
+				var o = $(o);
+				if(o.attr("src").indexOf("sinaimg") > 0 ){
+					o.attr("referrerpolicy","no-referrer");
+					link = o.attr("src");
+					o.attr("src",link);
+				}
+			});
+		},1000);
+
+</script>
+
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+
+	
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+
+  var GUEST = ['nick', 'mail', 'link'];
+
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+
+  var requiredFields = 'mail';
+  requiredFields  = requiredFields.split(',');
+
+
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'X8D7PdERV4O24r3mDuwHflNP-MdYXbMMI',
+    appKey: 'YRKVeK33SutYf7IlMsBlWJI0',
+    placeholder: '正确填写邮箱, 才能及时收到回复哦♪(^∇^*)',
+    avatar: 'robohash',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false,
+    requiredFields: requiredFields,
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

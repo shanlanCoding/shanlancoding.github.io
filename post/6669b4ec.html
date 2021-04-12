@@ -1,0 +1,770 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>2019-2020届-Java应届生面试题总结，附带真实面试记录 | 山岚 - 90码农历险记</title>
+  <meta name="description" content="1. map怎么实现hashcode和equals,为什么重写equals必须重写hashcode1. equals方法是Object类的一个基本方法，他实际上是用来比较两个对象的引用地址是否一致，从而返回一个Boolean结果。123public boolean equals(Object obj) &amp;#123;	return (this &#x3D;&#x3D; obj);     &amp;#125;  2. equa">
+<meta property="og:type" content="article">
+<meta property="og:title" content="2019-2020届-Java应届生面试题总结，附带真实面试记录">
+<meta property="og:url" content="https://blog.gobyte.cn/post/6669b4ec.html">
+<meta property="og:site_name" content="山岚博客">
+<meta property="og:description" content="1. map怎么实现hashcode和equals,为什么重写equals必须重写hashcode1. equals方法是Object类的一个基本方法，他实际上是用来比较两个对象的引用地址是否一致，从而返回一个Boolean结果。123public boolean equals(Object obj) &amp;#123;	return (this &#x3D;&#x3D; obj);     &amp;#125;  2. equa">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://wx1.sinaimg.cn/large/96e311f0gy1g5mldsz2yyj20en0dewg5.jpg">
+<meta property="article:published_time" content="2019-07-13T12:21:02.000Z">
+<meta property="article:modified_time" content="2020-03-02T13:31:25.492Z">
+<meta property="article:author" content="山岚">
+<meta property="article:tag" content="Java面试题">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://wx1.sinaimg.cn/large/96e311f0gy1g5mldsz2yyj20en0dewg5.jpg">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.gobyte.cn/post/6669b4ec.html">
+  
+    <link rel="alternate" href="/atom.xml" title="山岚博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/shan-2.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/shanlanCoding" target="_blank">
+          <img class="img-circle img-rotate" src="/images/ha-002-small.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">山岚</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">半吊子全栈开发者</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Work in Home; Home is in 0713</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links/">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>人生短短几个秋</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/windows/">windows</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8F%98%E5%BE%97%E6%9B%B4%E5%A5%BD/">变得更好</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E6%83%85/">心情</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%89%8B%E6%9C%BA/">手机</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B1%82%E8%81%8C/">求职</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%AA%9A%E6%93%8D%E4%BD%9C/">骚操作</a><span class="category-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoJs/" rel="tag">AutoJs</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">Java面试题</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/" rel="tag">Shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/centOS/" rel="tag">centOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E5%9F%BA%E7%A1%80/" rel="tag">java基础</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" rel="tag">java集合框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows-10/" rel="tag">windows 10</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" rel="tag">人脸识别</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" rel="tag">博客优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%90%E6%A7%BD/" rel="tag">吐槽</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E7%B1%B36/" rel="tag">小米6</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" rel="tag">思维改变</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%8B%E6%9C%BA/" rel="tag">手机</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" rel="tag">浏览器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%88%AC%E8%99%AB/" rel="tag">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" rel="tag">自定义手机号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%94%AE%E7%9B%98/" rel="tag">键盘</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/AutoJs/" style="font-size: 13.4px;">AutoJs</a> <a href="/tags/Git/" style="font-size: 13.4px;">Git</a> <a href="/tags/Hexo/" style="font-size: 13.8px;">Hexo</a> <a href="/tags/Java/" style="font-size: 13px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 13.2px;">JavaScript</a> <a href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" style="font-size: 13.6px;">Java面试题</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/Shell/" style="font-size: 13px;">Shell</a> <a href="/tags/centOS/" style="font-size: 13px;">centOS</a> <a href="/tags/java%E5%9F%BA%E7%A1%80/" style="font-size: 13px;">java基础</a> <a href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" style="font-size: 13px;">java集合框架</a> <a href="/tags/linux/" style="font-size: 13px;">linux</a> <a href="/tags/nginx/" style="font-size: 13.2px;">nginx</a> <a href="/tags/vue/" style="font-size: 13px;">vue</a> <a href="/tags/windows-10/" style="font-size: 13px;">windows 10</a> <a href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" style="font-size: 13px;">人脸识别</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" style="font-size: 13px;">博客优化</a> <a href="/tags/%E5%90%90%E6%A7%BD/" style="font-size: 13px;">吐槽</a> <a href="/tags/%E5%B0%8F%E7%B1%B36/" style="font-size: 13px;">小米6</a> <a href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" style="font-size: 13px;">思维改变</a> <a href="/tags/%E6%89%8B%E6%9C%BA/" style="font-size: 13px;">手机</a> <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" style="font-size: 13px;">浏览器</a> <a href="/tags/%E7%88%AC%E8%99%AB/" style="font-size: 13px;">爬虫</a> <a href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" style="font-size: 13px;">自定义手机号</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" style="font-size: 13px;">路由器</a> <a href="/tags/%E9%94%AE%E7%9B%98/" style="font-size: 13px;">键盘</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/cbfeffee.html" class="title">警惕！IKBC机械键盘寿命离谱，满打满算一年不要！入手须慎重！</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-12T09:31:09.000Z" itemprop="datePublished">2021-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Python/">Python</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/615d4220.html" class="title">51cto视频解析下载过程分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-04T10:48:29.000Z" itemprop="datePublished">2021-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/e56fdb88.html" class="title">pure主题valine留言板添加：昵称、邮箱必填必写功能</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-22T12:47:06.000Z" itemprop="datePublished">2020-05-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/5613105b.html" class="title">error:Missmatchins image and device刷机报错解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-06T14:28:21.000Z" itemprop="datePublished">2020-05-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/46726573.html" class="title">解决微软EDGE浏览器在线大声朗读语音卡顿问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-15T15:22:25.000Z" itemprop="datePublished">2020-03-15</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-map怎么实现hashcode和equals-为什么重写equals必须重写hashcode"><span class="toc-number">1.</span> <span class="toc-text">1. map怎么实现hashcode和equals,为什么重写equals必须重写hashcode</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-equals方法是Object类的一个基本方法，他实际上是用来比较两个对象的引用地址是否一致，从而返回一个Boolean结果。"><span class="toc-number">1.1.</span> <span class="toc-text">1. equals方法是Object类的一个基本方法，他实际上是用来比较两个对象的引用地址是否一致，从而返回一个Boolean结果。</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-equals-与‘-’的区别"><span class="toc-number">1.2.</span> <span class="toc-text">2. equals()与‘&#x3D;&#x3D;’的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-为什么重写equals-的同时还得重写hashCode"><span class="toc-number">1.3.</span> <span class="toc-text">3.为什么重写equals()的同时还得重写hashCode()</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-新人的疑惑：什么是Java的三大特性，五大原则"><span class="toc-number">2.</span> <span class="toc-text">2.新人的疑惑：什么是Java的三大特性，五大原则</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#什么是面向对象？"><span class="toc-number">2.1.</span> <span class="toc-text">什么是面向对象？</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#三大特性："><span class="toc-number">2.2.</span> <span class="toc-text">三大特性：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#五大原则："><span class="toc-number">2.3.</span> <span class="toc-text">五大原则：</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-单一职责原则SRP-Single-Responsibility-Principle"><span class="toc-number">2.3.1.</span> <span class="toc-text">1. 单一职责原则SRP(Single Responsibility Principle)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-开放封闭原则OCP-Open－Close-Principle"><span class="toc-number">2.3.2.</span> <span class="toc-text">2.开放封闭原则OCP(Open－Close Principle)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-里氏替换原则-the-Liskov-Substitution-Principle-LSP"><span class="toc-number">2.3.3.</span> <span class="toc-text">3.里氏替换原则(the Liskov Substitution Principle LSP)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-依赖倒置原则-the-Dependency-Inversion-Principle-DIP"><span class="toc-number">2.3.4.</span> <span class="toc-text">4.依赖倒置原则(the Dependency Inversion Principle DIP)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#5-接口分离原则-the-Interface-Segregation-Principle-ISP"><span class="toc-number">2.3.5.</span> <span class="toc-text">5.接口分离原则(the Interface Segregation Principle ISP)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-string-string-buffer-string-builder它们各自的区别，为什么要使用？"><span class="toc-number">3.</span> <span class="toc-text">3.string,string buffer,string builder它们各自的区别，为什么要使用？</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#请见：String和StringBuffer以及StringBuilder，哪个效率高？为什么？"><span class="toc-number">3.0.1.</span> <span class="toc-text">请见：String和StringBuffer以及StringBuilder，哪个效率高？为什么？</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-Java多线程的start和run方法的区别？"><span class="toc-number">4.</span> <span class="toc-text">4.Java多线程的start和run方法的区别？</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#总结："><span class="toc-number">4.1.</span> <span class="toc-text">总结：</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-springMVC的执行流程？"><span class="toc-number">5.</span> <span class="toc-text">5.springMVC的执行流程？</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-Java练习题" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header" name="标题头部>
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      2019-2020届-Java应届生面试题总结，附带真实面试记录
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/post/6669b4ec.html" class="article-date">
+	  <time datetime="2019-07-13T12:21:02.000Z" itemprop="datePublished">2019-07-13</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/Java/">Java</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">Java面试题</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/post/6669b4ec.html#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody" name="正文">
+      
+        <h1 id="1-map怎么实现hashcode和equals-为什么重写equals必须重写hashcode"><a href="#1-map怎么实现hashcode和equals-为什么重写equals必须重写hashcode" class="headerlink" title="1. map怎么实现hashcode和equals,为什么重写equals必须重写hashcode"></a>1. map怎么实现hashcode和equals,为什么重写equals必须重写hashcode</h1><h2 id="1-equals方法是Object类的一个基本方法，他实际上是用来比较两个对象的引用地址是否一致，从而返回一个Boolean结果。"><a href="#1-equals方法是Object类的一个基本方法，他实际上是用来比较两个对象的引用地址是否一致，从而返回一个Boolean结果。" class="headerlink" title="1. equals方法是Object类的一个基本方法，他实际上是用来比较两个对象的引用地址是否一致，从而返回一个Boolean结果。"></a>1. equals方法是Object类的一个基本方法，他实际上是用来比较两个对象的引用地址是否一致，从而返回一个Boolean结果。</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">	<span class="keyword">return</span> (<span class="keyword">this</span> == obj);     </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="2-equals-与‘-’的区别"><a href="#2-equals-与‘-’的区别" class="headerlink" title="2. equals()与‘==’的区别"></a>2. equals()与‘==’的区别</h2><pre><code>大多人会说`equlas`是比较内容，而`==`是比较内存地址。但是从上面的代码可以得知，`equals`实际上是借用了`==`运算符，比较了内存地址，所以上述的回答是正确的吗？先看一段示例代码：</code></pre><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Car</span> </span>&#123;</span><br><span class="line">          <span class="keyword">private</span> <span class="keyword">int</span> batch;</span><br><span class="line">          <span class="function"><span class="keyword">public</span> <span class="title">Car</span><span class="params">(<span class="keyword">int</span> batch)</span> </span>&#123;</span><br><span class="line">          <span class="keyword">this</span>.batch = batch;</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="comment">// ----------------------------</span></span><br><span class="line">      <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">          Car c1 = <span class="keyword">new</span> Car(<span class="number">1</span>);</span><br><span class="line">          Car c2 = <span class="keyword">new</span> Car(<span class="number">1</span>);</span><br><span class="line">          System.out.println(c1.equals(c2));</span><br><span class="line">          System.out.println(c1 == c2);</span><br><span class="line">      &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>返回结果：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">false</span></span><br><span class="line"><span class="keyword">false</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>分析：</strong>对于<code>==</code>返回的flase很好理解，，因为<code>==</code>是比较内存地址，而两个Car对象的地址是不同的，所以自然是false。<br>但是对于<code>equals</code>返回的false，是怎么理解的？如果说<code>equals</code>是比较内容，此时应该是返回true，为什么是返回false？这是因为Java里所有的对象都是基于Object类，所以Car类也是继承自Object类，自然也有equals方法。但是从问题1的代码可以得知，<code>equals</code>方法的是依赖于运算符<code>==</code>，所以在不重写<code>equals</code>方法的时候，默认还是比较两个对象的内存地址，两个对象的地址不同，自然返回false。<br><strong>如果我想让Car的batch相等，则用equals也返回true时，应该怎么做？</strong><br>在Car里，重写equals方法，判断Car的batch属性即可，示例代码如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">equals</span><span class="params">(Object obj)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (obj <span class="keyword">instanceof</span> Car) &#123;</span><br><span class="line">        Car c = (Car) obj;</span><br><span class="line">        <span class="keyword">return</span> batch == c.batch;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">false</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><strong>代码原理：</strong>通过instance关键字，判断对象是否属于Car类，通过后进一步判断batch属性是否相等。否则返回false。</p>
+<p><strong>总结：</strong>默认情况下equals方法和==是等价的，是对比对象的内存地址。但是我们可以通过方法重写，按照我们自己的需求进行比较。例如String类的equals方法，是比较字符串的序列，而不再是内存地址。</p>
+<h2 id="3-为什么重写equals-的同时还得重写hashCode"><a href="#3-为什么重写equals-的同时还得重写hashCode" class="headerlink" title="3.为什么重写equals()的同时还得重写hashCode()"></a>3.<strong>为什么重写equals()的同时还得重写hashCode()</strong></h2><p>Map集合在添加元素的时候，先要计算该元素的Hash值，然后根据Hash值才决定该元素的存储位置。当多个元素的Hash值相同的时候，就会以链表的形式存储。但是在存储之前还需要与旧元素进行对比是否相同，如果相同则不存入。不重写HashCode会导致<strong>相同内容的一个对象，在取出时为null。</strong>原因就是虽然两个对象内容相同，但是由于没有重写HashCode方法，导致默认调用Object类的HashCode方法，返回了该对象的地址，而两个对象虽然内容是相同，但是地址不同的，那么新的对象就去一个不存在bucket里寻找，自然是返回null。</p>
+<p>参考自：<a href="https://blog.csdn.net/javazejian/article/details/51348320" target="_blank" rel="noopener">重写equal()时为什么也得重写hashCode()之深度解读equal方法与hashCode方法渊源</a></p>
+<blockquote>
+<p>多线程的start和run函数的区别</p>
+</blockquote>
+<h1 id="2-新人的疑惑：什么是Java的三大特性，五大原则"><a href="#2-新人的疑惑：什么是Java的三大特性，五大原则" class="headerlink" title="2.新人的疑惑：什么是Java的三大特性，五大原则"></a>2.新人的疑惑：什么是Java的三大特性，五大原则</h1><h2 id="什么是面向对象？"><a href="#什么是面向对象？" class="headerlink" title="什么是面向对象？"></a>什么是面向对象？</h2><blockquote>
+<p>面向<a href="https://baike.baidu.com/item/对象" target="_blank" rel="noopener">对象</a>(Object Oriented,OO)是<a href="https://baike.baidu.com/item/软件开发方法/971447" target="_blank" rel="noopener">软件开发方法</a>。面向<a href="https://baike.baidu.com/item/对象" target="_blank" rel="noopener">对象</a>的概念和应用已超越了<a href="https://baike.baidu.com/item/程序设计/223952" target="_blank" rel="noopener">程序设计</a>和软件开发，扩展到如<a href="https://baike.baidu.com/item/数据库系统/215176" target="_blank" rel="noopener">数据库系统</a>、交互式界面、应用结构、应用平台、<a href="https://baike.baidu.com/item/分布式系统/4905336" target="_blank" rel="noopener">分布式系统</a>、<a href="https://baike.baidu.com/item/网络管理/5903609" target="_blank" rel="noopener">网络管理</a>结构、CAD技术、<a href="https://baike.baidu.com/item/人工智能/9180" target="_blank" rel="noopener">人工智能</a>等领域。面向对象是一种对现实世界理解和抽象的方法，是计算机编程技术发展到一定阶段后的产物。</p>
+</blockquote>
+<p>下面用一张图诠释什么是面向对象：</p>
+<p><img src="//wx1.sinaimg.cn/large/96e311f0gy1g5mldsz2yyj20en0dewg5.jpg" alt="如何理解面向对象"></p>
+<h2 id="三大特性："><a href="#三大特性：" class="headerlink" title="三大特性："></a>三大特性：</h2><ol>
+<li><p>封装 encapsulation</p>
+<ul>
+<li><p>把现实中存在的事物，封装成抽象成类。类可以把属性field、方法function只让可信的类或者对象来操作，对不可信的进行隐藏。一个类就是封装encapsulation了一些数据这操作这些数据的代码的逻辑实体。在一个对象的内部，某些代码，或者某系数据是可以被私有的，也就是不能被外界访问。通过这种方式，对象对内部数据提供了不同级别的保护，以防止程序中无关的部分意外的改变或错误的使用了对象的私有部分。</p>
+</li>
+<li><p><strong>个人理解：</strong>Java封装是先把现实生活中某个事物，比如汽车给抽象成一个Java类也就是Class文件。既然汽车有车轮、方向盘、能开起来，那么抽象后的Java类应该用属性（字段Field）、方法function来描述这个事物。例车有四个轮子，有一个方向盘，这些都可以抽象成字段。那么方法是什么？可以把汽车运行抽象成一个Run()方法。既然是封装，那么肯定还要提到权限等级，因为我这些车轮、方向盘的属性，以及汽车Run()的调用，不是任何一个人，某个对象就能调用的。只有取得了驾照的人才能开车，只有具有修理资质的人才能为我修车，所以我就需要使用上权限修饰符，如下表格所示。这些种种的规则，其实都是为了将显示中的物体描述成代码，让程序员更好的写出逻辑代码，毕竟即使面向再通俗易懂，最终还是需要翻译成二进制共给CPU进行处理，所以面向对象也好，面向过程也好它其实是为了服务于程序员，仅此而已。所以如果你真的够厉害，你的键盘只需要0/1两个键来编程也不是不可以。</p>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th align="center">访问权限</th>
+<th align="center">类</th>
+<th align="center">包</th>
+<th align="center">子类</th>
+<th align="center">其他包</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">public</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+</tr>
+<tr>
+<td align="center">protect</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">×</td>
+</tr>
+<tr>
+<td align="center">default</td>
+<td align="center">√</td>
+<td align="center">√</td>
+<td align="center">×</td>
+<td align="center">×</td>
+</tr>
+<tr>
+<td align="center">private</td>
+<td align="center">√</td>
+<td align="center">×</td>
+<td align="center">×</td>
+<td align="center">×</td>
+</tr>
+</tbody></table>
+<p>具体详细信息请参见：<a href="https://www.cnblogs.com/Annoying/p/5403912.html" target="_blank" rel="noopener">java中4种修饰符访问权限的区别及详解全过程</a></p>
+</li>
+<li><p>继承 extends</p>
+<ul>
+<li>继承是让某个类型的对象获得另一个类型对象的属性、方法。支持按级分类的概念。继承是指这样的一种能力：他可以使用现有类的所有功能，并在无需重新编写原来类的情况下对这些功能进行拓展。通过继承创建的新类称之为“子类”或者“派生类”，被继承的类称之为“父类”、“基类”、“超类”。继承的使用方式一共有两种：实现继承、接口继承。实现继承就是继承父类的属性、方法，不需要额外的代码进行编写就能直接使用。接口继承是指仅使用属性、方法的名称，但是子类必须要实现方法。</li>
+<li><strong>个人理解：</strong>实现继承就是拥有父类的所有的属性、方法，拿来直接用，不再需要进行额外的编码。例如儿子继承了父亲的财产，父亲的财产儿子拿来就可以使用，不需要为了这些财产去做一些劳动。接口继承，接口继承更新是定一个规矩，让子类把这个规矩完善并实现出来。例如家有家法，族有族规，但是族规只说不能伤天害理，但是没有规定哪些事情是伤天害理的。所以子孙们需要继承族规并实现出来，例如根据当今社会对族规进行完善，不能让族违反国家法律。简单说接口继承制告诉你现在有<strong>哪些属性</strong>，有<strong>哪些方法</strong>。而这些属性类型，方法的参数类型、个数，以及返回类型都是固定的。至于你方法体内的代码怎么做我不管你，你只需要按照我的这个格式返回结果就行。</li>
+</ul>
+</li>
+<li><p>多态</p>
+<ul>
+<li><p>多态性是面向对象编程的又一个重要特征，它是指在父类中定义的属性和方法被子类继承之后，可以具有不同的数据类型或表现出不同的行为，这使得同一个属性或方法在父类及其各个子类中具有不同的含义。</p>
+<p>对面向对象来说，多态分为编译时多态和运行时多态。其中编译时多态是静态的，主要是指方法的重载，它是根据参数列表的不同来区分不同的方法。通过编译之后会变成两个不同的方法，在运行时谈不上多态。而运行时多态是动态的，它是通过动态绑定来实现的，也就是大家通常所说的多态性。</p>
+<p>Java 实现多态有 <strong>3 个必要条件</strong>：继承、重写和向上转型。只有满足这 3 个条件，开发人员才能够在同一个继承结构中使用统一的逻辑实现代码处理不同的对象，从而执行不同的行为。</p>
+</li>
+<li><p>多态存在的三个必要条件</p>
+<ol>
+<li>要有继承：在多态中必须存在有继承关系的子类和父类。</li>
+<li>要有重写：子类对父类中某些方法进行重新定义，在调用这些方法时就会调用子类的方法。</li>
+<li>父类引用指向子类对象：在多态中需要将子类的引用赋给父类对象，只有这样该引用才既能可以调用父类的方法，又能调用子类的方法。</li>
+</ol>
+<blockquote>
+<p>参考：<a href="http://c.biancheng.net/view/1001.html" target="_blank" rel="noopener">Java多态性：Java什么是多态？</a></p>
+</blockquote>
+</li>
+</ul>
+</li>
+</ol>
+<h2 id="五大原则："><a href="#五大原则：" class="headerlink" title="五大原则："></a>五大原则：</h2><h3 id="1-单一职责原则SRP-Single-Responsibility-Principle"><a href="#1-单一职责原则SRP-Single-Responsibility-Principle" class="headerlink" title="1. 单一职责原则SRP(Single Responsibility Principle)"></a>1. 单一职责原则SRP(Single Responsibility Principle)</h3><p>指一个类要功能单一，不要包罗万象。如同一个人，分配的工作不能太多，否则一天到晚虽然忙忙碌碌，但是效率却高不起来。</p>
+<blockquote>
+<p>职员类例子： 比如在职员类里，将工程师、销售人员、销售经理这些情况都放在职员类里考虑，其结果将会非常混乱，在这个假设下，职员类里的每个方法都要ifelse判断是哪种情况，从类结构上来说将会十分臃肿，并且上述三种的职员类型，不论哪一种发生需求变化，都会改变职员类！这个是大家所不愿意看到的！</p>
+</blockquote>
+<h3 id="2-开放封闭原则OCP-Open－Close-Principle"><a href="#2-开放封闭原则OCP-Open－Close-Principle" class="headerlink" title="2.开放封闭原则OCP(Open－Close Principle)"></a>2.开放封闭原则OCP(Open－Close Principle)</h3><p>一个模块在拓展性方面应该是公开的，而在可更改性方面应该是封闭的。比如：一个网络模块，原来是服务端功能，而现在要加入客户端功能，那么应当在不用修改服务端代码的前提下，能够增加客户端功能的实现代码，这就要求在设计之初，就应当将客户端和服务端的功能分开，把公共部分的抽象出来。</p>
+<blockquote>
+<p>变化来临时，如果不必改动软件实体裁的源代码，就能扩充它的行为，那么这个软件实体设计就是满足开放封闭原则的。如果说我们预测到某种变化，或者某种变化发生了，我们应当创建抽象类来隔离以后发生的同类变化。</p>
+</blockquote>
+<h3 id="3-里氏替换原则-the-Liskov-Substitution-Principle-LSP"><a href="#3-里氏替换原则-the-Liskov-Substitution-Principle-LSP" class="headerlink" title="3.里氏替换原则(the Liskov Substitution Principle LSP)"></a>3.里氏替换原则(the Liskov Substitution Principle LSP)</h3><p>子类应当能够替换父类，并且出现在父类能够出现的任何地方。比如公司举办年度晚会，所有员工都可以参加抽奖，那么不管是老员工还是新员工，也不管是总部员工还是外派员工，都应该可以参加抽奖，否则这家公司内部就会不和谐。</p>
+<blockquote>
+<p>在这个原则中父类应尽可能使用接口或者抽象类来实现！</p>
+<p>子类通过实现了父类接口，能够替父类的使用地方！</p>
+<p>通过这个原则，我们客户端在使用父类接口的时候，通过子类实现！</p>
+<p>意思就是说我们依赖父类接口，在客户端声明一个父类接口，通过其子类来实现</p>
+<p>这个时候就要求子类必须能够替换父类所出现的任何地方，这样做的好处就是，在根据新要求扩展父类接口的新子类的时候而不影响当前客户端的使用！</p>
+</blockquote>
+<h3 id="4-依赖倒置原则-the-Dependency-Inversion-Principle-DIP"><a href="#4-依赖倒置原则-the-Dependency-Inversion-Principle-DIP" class="headerlink" title="4.依赖倒置原则(the Dependency Inversion Principle DIP)"></a>4.依赖倒置原则(the Dependency Inversion Principle DIP)</h3><p>传统的结构化编程中，最上层的模块通常都要依赖下面的子模块来实现，也称为高层依赖低层！所以DIP原则就是要逆转这种依赖关系，让高层模块不要依赖低层模块，所以称之为依赖倒置原则！</p>
+<blockquote>
+<p>假设B模块比A模块级别低，但是B需要使用A的功能，这个时候B不应当使用A中的具体类；而是应当有B定义一个抽象接口，并由A来实现这个抽象接口，B只使用这个抽象接口，这样就达到了依赖倒置的目的，B也解除了对A的依赖，反过来是A依赖于B的定义的抽象接口。通过上层模块难以避免依赖下层模块，假如B也依赖于A的实现，那么就可能造成了循环依赖。一个常见的问题就是编译A模块是需要包含B模块的class文件，而编译B时需要包含A模块的class文件。</p>
+</blockquote>
+<p><strong>建议必读：</strong><a href="https://blog.csdn.net/briblue/article/details/75093382" target="_blank" rel="noopener">轻松学，浅析依赖倒置（DIP）、控制反转(IOC)和依赖注入(DI)</a></p>
+<h3 id="5-接口分离原则-the-Interface-Segregation-Principle-ISP"><a href="#5-接口分离原则-the-Interface-Segregation-Principle-ISP" class="headerlink" title="5.接口分离原则(the Interface Segregation Principle ISP)"></a>5.接口分离原则(the Interface Segregation Principle ISP)</h3><p>使用多个专门的接口比使用单个接口要好的多！模块间要通过抽象接口来隔离开，而不是通过具体的类强耦合起来。</p>
+<blockquote>
+<p>在我实际编程中，为了减少接口的定义，将许多类似的方法都放在一个接口中，最后发现，维护和实现接口的时候花了太多精力，而接口所定义的操作相当于对客户端的一种承诺，这种承诺当然是越少越好，越精练越好，过多的承诺带来的就是你的大量精力和时间去维护！</p>
+</blockquote>
+<h1 id="3-string-string-buffer-string-builder它们各自的区别，为什么要使用？"><a href="#3-string-string-buffer-string-builder它们各自的区别，为什么要使用？" class="headerlink" title="3.string,string buffer,string builder它们各自的区别，为什么要使用？"></a>3.string,string buffer,string builder它们各自的区别，为什么要使用？</h1><h3 id="请见：String和StringBuffer以及StringBuilder，哪个效率高？为什么？"><a href="#请见：String和StringBuffer以及StringBuilder，哪个效率高？为什么？" class="headerlink" title="请见：String和StringBuffer以及StringBuilder，哪个效率高？为什么？"></a><a href="https://blog.gobyte.cn/post/4a74da6f.html#2-String和StringBuffer以及StringBuilder，哪个效率高？为什么？">请见：String和StringBuffer以及StringBuilder，哪个效率高？为什么？</a></h3><h1 id="4-Java多线程的start和run方法的区别？"><a href="#4-Java多线程的start和run方法的区别？" class="headerlink" title="4.Java多线程的start和run方法的区别？"></a>4.Java多线程的start和run方法的区别？</h1><ul>
+<li><p><strong>Start()：</strong>它是用来启动一个新的线程。通过start()启动的线程，出于就绪（可运行）的状态，但是并没有运行，一旦得到了CPU的时间片，就开始执行相应线程的run()方法，这里方法run()称之为线程体，它包含了这个要执行的线程的内容。run()执行结束，此线程随机终止。start()不能被重复的调用。用start()来启动线程，真正实现了多线程运行，<strong>即无需等待某个run()方法执行完毕就执行下面的代码</strong>，即进行了线程的切换。</p>
+</li>
+<li><p><strong>run()：</strong>和普通成员方法一样，可以被重复的调用。<strong>如果直接调用run()方法并不会启动新的线程！！！</strong>程序中依然只有主线程这一个线程，其程序执行路径还是只有这一条，还是要顺序执行，还是要等待run()方法体执行完毕才可执行下面代码，这样并没有达到多线程的目的。</p>
+<p><strong>示例代码：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">TODO:</span> 多线程测试start和run方法</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> shanLan http://blog.gobyte.cn</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/8/5 23:21</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">threadTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        Runner1 r = <span class="keyword">new</span> Runner1();</span><br><span class="line">        <span class="comment">//这是方法调用，而不是开启一个线程</span></span><br><span class="line">        r.run();</span><br><span class="line">        <span class="comment">//调用了Thread(Runnable target)方法。且父类对象变量指向子类对象。</span></span><br><span class="line">        Thread t = <span class="keyword">new</span> Thread(r);</span><br><span class="line">        t.start();</span><br><span class="line">        <span class="comment">// 在主线程里进行循环执行</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">            System.out.println(<span class="string">"进入Main Thread运行状态"</span> + i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * <span class="doctag">TODO:</span> 实现了这个接口，jdk就知道这个类是一个线程</span></span><br><span class="line"><span class="comment"> *</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> shanLan http://blog.gobyte.cn</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@date</span> 2019/8/5 23:29</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Runner1</span> <span class="keyword">implements</span> <span class="title">Runnable</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">run</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">100</span>; i++) &#123;</span><br><span class="line">            System.out.println(<span class="string">"进入Runner1运行状态"</span> + i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ul>
+<p>  <strong>打印结果：</strong></p>
+  <details><summary>点击查看完整打印结果</summary>
+  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br><span class="line">255</span><br><span class="line">256</span><br><span class="line">257</span><br><span class="line">258</span><br><span class="line">259</span><br><span class="line">260</span><br><span class="line">261</span><br><span class="line">262</span><br><span class="line">263</span><br><span class="line">264</span><br><span class="line">265</span><br><span class="line">266</span><br><span class="line">267</span><br><span class="line">268</span><br><span class="line">269</span><br><span class="line">270</span><br><span class="line">271</span><br><span class="line">272</span><br><span class="line">273</span><br><span class="line">274</span><br><span class="line">275</span><br><span class="line">276</span><br><span class="line">277</span><br><span class="line">278</span><br><span class="line">279</span><br><span class="line">280</span><br><span class="line">281</span><br><span class="line">282</span><br><span class="line">283</span><br><span class="line">284</span><br><span class="line">285</span><br><span class="line">286</span><br><span class="line">287</span><br><span class="line">288</span><br><span class="line">289</span><br><span class="line">290</span><br><span class="line">291</span><br><span class="line">292</span><br><span class="line">293</span><br><span class="line">294</span><br><span class="line">295</span><br><span class="line">296</span><br><span class="line">297</span><br><span class="line">298</span><br><span class="line">299</span><br><span class="line">300</span><br></pre></td><td class="code"><pre><span class="line">进入Runner1运行状态0</span><br><span class="line">进入Runner1运行状态1</span><br><span class="line">进入Runner1运行状态2</span><br><span class="line">进入Runner1运行状态3</span><br><span class="line">进入Runner1运行状态4</span><br><span class="line">进入Runner1运行状态5</span><br><span class="line">进入Runner1运行状态6</span><br><span class="line">进入Runner1运行状态7</span><br><span class="line">进入Runner1运行状态8</span><br><span class="line">进入Runner1运行状态9</span><br><span class="line">进入Runner1运行状态10</span><br><span class="line">进入Runner1运行状态11</span><br><span class="line">进入Runner1运行状态12</span><br><span class="line">进入Runner1运行状态13</span><br><span class="line">进入Runner1运行状态14</span><br><span class="line">进入Runner1运行状态15</span><br><span class="line">进入Runner1运行状态16</span><br><span class="line">进入Runner1运行状态17</span><br><span class="line">进入Runner1运行状态18</span><br><span class="line">进入Runner1运行状态19</span><br><span class="line">进入Runner1运行状态20</span><br><span class="line">进入Runner1运行状态21</span><br><span class="line">进入Runner1运行状态22</span><br><span class="line">进入Runner1运行状态23</span><br><span class="line">进入Runner1运行状态24</span><br><span class="line">进入Runner1运行状态25</span><br><span class="line">进入Runner1运行状态26</span><br><span class="line">进入Runner1运行状态27</span><br><span class="line">进入Runner1运行状态28</span><br><span class="line">进入Runner1运行状态29</span><br><span class="line">进入Runner1运行状态30</span><br><span class="line">进入Runner1运行状态31</span><br><span class="line">进入Runner1运行状态32</span><br><span class="line">进入Runner1运行状态33</span><br><span class="line">进入Runner1运行状态34</span><br><span class="line">进入Runner1运行状态35</span><br><span class="line">进入Runner1运行状态36</span><br><span class="line">进入Runner1运行状态37</span><br><span class="line">进入Runner1运行状态38</span><br><span class="line">进入Runner1运行状态39</span><br><span class="line">进入Runner1运行状态40</span><br><span class="line">进入Runner1运行状态41</span><br><span class="line">进入Runner1运行状态42</span><br><span class="line">进入Runner1运行状态43</span><br><span class="line">进入Runner1运行状态44</span><br><span class="line">进入Runner1运行状态45</span><br><span class="line">进入Runner1运行状态46</span><br><span class="line">进入Runner1运行状态47</span><br><span class="line">进入Runner1运行状态48</span><br><span class="line">进入Runner1运行状态49</span><br><span class="line">进入Runner1运行状态50</span><br><span class="line">进入Runner1运行状态51</span><br><span class="line">进入Runner1运行状态52</span><br><span class="line">进入Runner1运行状态53</span><br><span class="line">进入Runner1运行状态54</span><br><span class="line">进入Runner1运行状态55</span><br><span class="line">进入Runner1运行状态56</span><br><span class="line">进入Runner1运行状态57</span><br><span class="line">进入Runner1运行状态58</span><br><span class="line">进入Runner1运行状态59</span><br><span class="line">进入Runner1运行状态60</span><br><span class="line">进入Runner1运行状态61</span><br><span class="line">进入Runner1运行状态62</span><br><span class="line">进入Runner1运行状态63</span><br><span class="line">进入Runner1运行状态64</span><br><span class="line">进入Runner1运行状态65</span><br><span class="line">进入Runner1运行状态66</span><br><span class="line">进入Runner1运行状态67</span><br><span class="line">进入Runner1运行状态68</span><br><span class="line">进入Runner1运行状态69</span><br><span class="line">进入Runner1运行状态70</span><br><span class="line">进入Runner1运行状态71</span><br><span class="line">进入Runner1运行状态72</span><br><span class="line">进入Runner1运行状态73</span><br><span class="line">进入Runner1运行状态74</span><br><span class="line">进入Runner1运行状态75</span><br><span class="line">进入Runner1运行状态76</span><br><span class="line">进入Runner1运行状态77</span><br><span class="line">进入Runner1运行状态78</span><br><span class="line">进入Runner1运行状态79</span><br><span class="line">进入Runner1运行状态80</span><br><span class="line">进入Runner1运行状态81</span><br><span class="line">进入Runner1运行状态82</span><br><span class="line">进入Runner1运行状态83</span><br><span class="line">进入Runner1运行状态84</span><br><span class="line">进入Runner1运行状态85</span><br><span class="line">进入Runner1运行状态86</span><br><span class="line">进入Runner1运行状态87</span><br><span class="line">进入Runner1运行状态88</span><br><span class="line">进入Runner1运行状态89</span><br><span class="line">进入Runner1运行状态90</span><br><span class="line">进入Runner1运行状态91</span><br><span class="line">进入Runner1运行状态92</span><br><span class="line">进入Runner1运行状态93</span><br><span class="line">进入Runner1运行状态94</span><br><span class="line">进入Runner1运行状态95</span><br><span class="line">进入Runner1运行状态96</span><br><span class="line">进入Runner1运行状态97</span><br><span class="line">进入Runner1运行状态98</span><br><span class="line">进入Runner1运行状态99</span><br><span class="line">进入Main Thread运行状态0</span><br><span class="line">进入Main Thread运行状态1</span><br><span class="line">进入Main Thread运行状态2</span><br><span class="line">进入Main Thread运行状态3</span><br><span class="line">进入Main Thread运行状态4</span><br><span class="line">进入Main Thread运行状态5</span><br><span class="line">进入Main Thread运行状态6</span><br><span class="line">进入Main Thread运行状态7</span><br><span class="line">进入Main Thread运行状态8</span><br><span class="line">进入Main Thread运行状态9</span><br><span class="line">进入Runner1运行状态0</span><br><span class="line">进入Runner1运行状态1</span><br><span class="line">进入Main Thread运行状态10</span><br><span class="line">进入Runner1运行状态2</span><br><span class="line">进入Runner1运行状态3</span><br><span class="line">进入Runner1运行状态4</span><br><span class="line">进入Runner1运行状态5</span><br><span class="line">进入Runner1运行状态6</span><br><span class="line">进入Runner1运行状态7</span><br><span class="line">进入Main Thread运行状态11</span><br><span class="line">进入Main Thread运行状态12</span><br><span class="line">进入Runner1运行状态8</span><br><span class="line">进入Main Thread运行状态13</span><br><span class="line">进入Runner1运行状态9</span><br><span class="line">进入Main Thread运行状态14</span><br><span class="line">进入Runner1运行状态10</span><br><span class="line">进入Main Thread运行状态15</span><br><span class="line">进入Runner1运行状态11</span><br><span class="line">进入Main Thread运行状态16</span><br><span class="line">进入Runner1运行状态12</span><br><span class="line">进入Main Thread运行状态17</span><br><span class="line">进入Runner1运行状态13</span><br><span class="line">进入Main Thread运行状态18</span><br><span class="line">进入Runner1运行状态14</span><br><span class="line">进入Runner1运行状态15</span><br><span class="line">进入Runner1运行状态16</span><br><span class="line">进入Runner1运行状态17</span><br><span class="line">进入Runner1运行状态18</span><br><span class="line">进入Runner1运行状态19</span><br><span class="line">进入Runner1运行状态20</span><br><span class="line">进入Runner1运行状态21</span><br><span class="line">进入Runner1运行状态22</span><br><span class="line">进入Main Thread运行状态19</span><br><span class="line">进入Runner1运行状态23</span><br><span class="line">进入Main Thread运行状态20</span><br><span class="line">进入Runner1运行状态24</span><br><span class="line">进入Main Thread运行状态21</span><br><span class="line">进入Runner1运行状态25</span><br><span class="line">进入Main Thread运行状态22</span><br><span class="line">进入Runner1运行状态26</span><br><span class="line">进入Main Thread运行状态23</span><br><span class="line">进入Runner1运行状态27</span><br><span class="line">进入Main Thread运行状态24</span><br><span class="line">进入Runner1运行状态28</span><br><span class="line">进入Main Thread运行状态25</span><br><span class="line">进入Runner1运行状态29</span><br><span class="line">进入Main Thread运行状态26</span><br><span class="line">进入Runner1运行状态30</span><br><span class="line">进入Main Thread运行状态27</span><br><span class="line">进入Runner1运行状态31</span><br><span class="line">进入Main Thread运行状态28</span><br><span class="line">进入Runner1运行状态32</span><br><span class="line">进入Main Thread运行状态29</span><br><span class="line">进入Runner1运行状态33</span><br><span class="line">进入Main Thread运行状态30</span><br><span class="line">进入Runner1运行状态34</span><br><span class="line">进入Main Thread运行状态31</span><br><span class="line">进入Runner1运行状态35</span><br><span class="line">进入Main Thread运行状态32</span><br><span class="line">进入Runner1运行状态36</span><br><span class="line">进入Main Thread运行状态33</span><br><span class="line">进入Runner1运行状态37</span><br><span class="line">进入Main Thread运行状态34</span><br><span class="line">进入Runner1运行状态38</span><br><span class="line">进入Main Thread运行状态35</span><br><span class="line">进入Runner1运行状态39</span><br><span class="line">进入Main Thread运行状态36</span><br><span class="line">进入Runner1运行状态40</span><br><span class="line">进入Main Thread运行状态37</span><br><span class="line">进入Runner1运行状态41</span><br><span class="line">进入Main Thread运行状态38</span><br><span class="line">进入Runner1运行状态42</span><br><span class="line">进入Main Thread运行状态39</span><br><span class="line">进入Runner1运行状态43</span><br><span class="line">进入Main Thread运行状态40</span><br><span class="line">进入Main Thread运行状态41</span><br><span class="line">进入Main Thread运行状态42</span><br><span class="line">进入Main Thread运行状态43</span><br><span class="line">进入Main Thread运行状态44</span><br><span class="line">进入Main Thread运行状态45</span><br><span class="line">进入Main Thread运行状态46</span><br><span class="line">进入Main Thread运行状态47</span><br><span class="line">进入Main Thread运行状态48</span><br><span class="line">进入Main Thread运行状态49</span><br><span class="line">进入Main Thread运行状态50</span><br><span class="line">进入Main Thread运行状态51</span><br><span class="line">进入Main Thread运行状态52</span><br><span class="line">进入Runner1运行状态44</span><br><span class="line">进入Main Thread运行状态53</span><br><span class="line">进入Main Thread运行状态54</span><br><span class="line">进入Main Thread运行状态55</span><br><span class="line">进入Main Thread运行状态56</span><br><span class="line">进入Main Thread运行状态57</span><br><span class="line">进入Main Thread运行状态58</span><br><span class="line">进入Main Thread运行状态59</span><br><span class="line">进入Main Thread运行状态60</span><br><span class="line">进入Runner1运行状态45</span><br><span class="line">进入Main Thread运行状态61</span><br><span class="line">进入Main Thread运行状态62</span><br><span class="line">进入Main Thread运行状态63</span><br><span class="line">进入Main Thread运行状态64</span><br><span class="line">进入Main Thread运行状态65</span><br><span class="line">进入Main Thread运行状态66</span><br><span class="line">进入Main Thread运行状态67</span><br><span class="line">进入Main Thread运行状态68</span><br><span class="line">进入Runner1运行状态46</span><br><span class="line">进入Main Thread运行状态69</span><br><span class="line">进入Main Thread运行状态70</span><br><span class="line">进入Main Thread运行状态71</span><br><span class="line">进入Main Thread运行状态72</span><br><span class="line">进入Main Thread运行状态73</span><br><span class="line">进入Main Thread运行状态74</span><br><span class="line">进入Main Thread运行状态75</span><br><span class="line">进入Main Thread运行状态76</span><br><span class="line">进入Runner1运行状态47</span><br><span class="line">进入Main Thread运行状态77</span><br><span class="line">进入Main Thread运行状态78</span><br><span class="line">进入Main Thread运行状态79</span><br><span class="line">进入Runner1运行状态48</span><br><span class="line">进入Runner1运行状态49</span><br><span class="line">进入Runner1运行状态50</span><br><span class="line">进入Runner1运行状态51</span><br><span class="line">进入Runner1运行状态52</span><br><span class="line">进入Runner1运行状态53</span><br><span class="line">进入Runner1运行状态54</span><br><span class="line">进入Runner1运行状态55</span><br><span class="line">进入Runner1运行状态56</span><br><span class="line">进入Runner1运行状态57</span><br><span class="line">进入Runner1运行状态58</span><br><span class="line">进入Runner1运行状态59</span><br><span class="line">进入Runner1运行状态60</span><br><span class="line">进入Main Thread运行状态80</span><br><span class="line">进入Main Thread运行状态81</span><br><span class="line">进入Runner1运行状态61</span><br><span class="line">进入Runner1运行状态62</span><br><span class="line">进入Runner1运行状态63</span><br><span class="line">进入Runner1运行状态64</span><br><span class="line">进入Runner1运行状态65</span><br><span class="line">进入Main Thread运行状态82</span><br><span class="line">进入Runner1运行状态66</span><br><span class="line">进入Main Thread运行状态83</span><br><span class="line">进入Runner1运行状态67</span><br><span class="line">进入Runner1运行状态68</span><br><span class="line">进入Runner1运行状态69</span><br><span class="line">进入Runner1运行状态70</span><br><span class="line">进入Runner1运行状态71</span><br><span class="line">进入Runner1运行状态72</span><br><span class="line">进入Runner1运行状态73</span><br><span class="line">进入Runner1运行状态74</span><br><span class="line">进入Runner1运行状态75</span><br><span class="line">进入Main Thread运行状态84</span><br><span class="line">进入Main Thread运行状态85</span><br><span class="line">进入Main Thread运行状态86</span><br><span class="line">进入Main Thread运行状态87</span><br><span class="line">进入Main Thread运行状态88</span><br><span class="line">进入Main Thread运行状态89</span><br><span class="line">进入Main Thread运行状态90</span><br><span class="line">进入Main Thread运行状态91</span><br><span class="line">进入Runner1运行状态76</span><br><span class="line">进入Runner1运行状态77</span><br><span class="line">进入Runner1运行状态78</span><br><span class="line">进入Runner1运行状态79</span><br><span class="line">进入Runner1运行状态80</span><br><span class="line">进入Runner1运行状态81</span><br><span class="line">进入Runner1运行状态82</span><br><span class="line">进入Runner1运行状态83</span><br><span class="line">进入Runner1运行状态84</span><br><span class="line">进入Runner1运行状态85</span><br><span class="line">进入Runner1运行状态86</span><br><span class="line">进入Runner1运行状态87</span><br><span class="line">进入Runner1运行状态88</span><br><span class="line">进入Runner1运行状态89</span><br><span class="line">进入Runner1运行状态90</span><br><span class="line">进入Runner1运行状态91</span><br><span class="line">进入Runner1运行状态92</span><br><span class="line">进入Runner1运行状态93</span><br><span class="line">进入Runner1运行状态94</span><br><span class="line">进入Runner1运行状态95</span><br><span class="line">进入Runner1运行状态96</span><br><span class="line">进入Runner1运行状态97</span><br><span class="line">进入Runner1运行状态98</span><br><span class="line">进入Runner1运行状态99</span><br><span class="line">进入Main Thread运行状态92</span><br><span class="line">进入Main Thread运行状态93</span><br><span class="line">进入Main Thread运行状态94</span><br><span class="line">进入Main Thread运行状态95</span><br><span class="line">进入Main Thread运行状态96</span><br><span class="line">进入Main Thread运行状态97</span><br><span class="line">进入Main Thread运行状态98</span><br><span class="line">进入Main Thread运行状态99</span><br></pre></td></tr></table></figure>
+
+  </details>
+
+<p>  <strong>根据打印结果我们知道，run方法没有执行完毕是不会执行下面的代码的。而start方法则会和主线程进行交替执行，并不需要等start代码执行完毕。</strong></p>
+<h2 id="总结："><a href="#总结：" class="headerlink" title="总结："></a><strong>总结：</strong></h2><ol>
+<li>start()方法可以启动新的线程，而run()方法thread类的一个普通方法调用，还是在主线程里执行</li>
+<li>start()能启动一个新的线程，run()不行</li>
+<li>start()不能被重复调用；run()可以</li>
+<li>star()中的run代码块可以不执行完就可以执行下面的代码，即使进行了线程的切换。直接调用run()方法必须等待其代码全部执行完才能继续执行下面的代码</li>
+<li>start()实现了多线程；run()没有实现多线程</li>
+</ol>
+<h1 id="5-springMVC的执行流程？"><a href="#5-springMVC的执行流程？" class="headerlink" title="5.springMVC的执行流程？"></a>5.springMVC的执行流程？</h1><p>待完善</p>
+
+      
+    </div>
+
+    <div class="article-footer" name="文章脚部">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.gobyte.cn/post/6669b4ec.html" title="2019-2020届-Java应届生面试题总结，附带真实面试记录" target="_blank" rel="external">https://blog.gobyte.cn/post/6669b4ec.html</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/shanlanCoding" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/ha-002-small.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/shanlanCoding" target="_blank"><span class="text-dark">山岚</span><small class="ml-1x">半吊子全栈开发者</small></a></h3>
+        <div>大龄萌新；新时代福娃；喜欢东搞西搞；对待问题有独到的见解；</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+    <div class="bar-inner">
+        
+            <ul class="pager pull-left">
+                
+                    <li class="prev">
+                        <a href="/post/738b9ed9.html" title="MIUI真的负优化吗？"><i
+                                    class="icon icon-angle-left"
+                                    aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+                    </li>
+                
+                
+                    <li class="next">
+                        <a href="/post/57eede11.html"
+                           title="Java集合框架系统学习"><span>下一篇&nbsp;&nbsp;</span><i
+                                    class="icon icon-angle-right" aria-hidden="true"></i></a>
+                    </li>
+                
+                
+                    <li class="toggle-toc">
+                        <a class="toggle-btn collapsed" style="color: red" data-toggle="collapse" href="#collapseToc"
+                           aria-expanded="false" title="文章目录" role="button">
+                            <span>[&nbsp;</span><span>文章目录</span>
+                            <i class="text-collapsed icon icon-anchor"></i>
+                            <i class="text-in icon icon-close"></i>
+                            <span>]</span>
+                        </a>
+                    </li>
+                
+            </ul>
+        
+        
+
+        <div class="bar-right">
+            
+        </div>
+    </div>
+</nav>
+  
+
+
+
+  	<script>
+	  <!-- 百度站长自动推送链接 -->
+		(function(){
+		var bp = document.createElement('script');
+		var curProtocol = window.location.protocol.split(':')[0];
+		if (curProtocol === 'https') {
+			bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+		}
+		else {
+			bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		}
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+
+
+	<div class="powered-by" name="不蒜子" sytle="font-size:12px">
+		<i class="icon icon-users"></i>
+		<span id="busuanzi_container_site_uv">
+			总访客 : <span id="busuanzi_value_site_uv"></span>
+		</span><br/>
+		<i class="icon icon-eye-fill"></i>
+		<span id="busuanzi_container_site_pv">
+		    总阅读 : <span id="busuanzi_value_site_pv"></span>
+		</span>
+	</div>
+    
+	<div class="copyright" name="作者">
+		
+		<div class="publishby">
+			Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+		</div>
+	</div>
+
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+
+<script>
+	window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+
+		<!-- 百度统计 -script.ejs --> 
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "https://hm.baidu.com/hm.js?e003775b21b75a71e1396c1fc395cce7";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+
+		<!-- 新浪云防盗链 -->
+		var link = "" ;
+		setTimeout( function(){
+			$("img").each( (i,o) => {
+				var o = $(o);
+				if(o.attr("src").indexOf("sinaimg") > 0 ){
+					o.attr("referrerpolicy","no-referrer");
+					link = o.attr("src");
+					o.attr("src",link);
+				}
+			});
+		},1000);
+
+</script>
+
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+
+	
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+
+  var GUEST = ['nick', 'mail', 'link'];
+
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+
+  var requiredFields = 'mail';
+  requiredFields  = requiredFields.split(',');
+
+
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'X8D7PdERV4O24r3mDuwHflNP-MdYXbMMI',
+    appKey: 'YRKVeK33SutYf7IlMsBlWJI0',
+    placeholder: '正确填写邮箱, 才能及时收到回复哦♪(^∇^*)',
+    avatar: 'robohash',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false,
+    requiredFields: requiredFields,
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

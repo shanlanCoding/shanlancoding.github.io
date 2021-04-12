@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>教你&#34;自定义&#34;选择手机号码 | 山岚 - 90码农历险记</title>
+  <meta name="description" content="声明本教程仅以技术交流为前提，不得违反法律法规，否则一切责任由操作者自行承担。  1. 缘由起初是自己在网上购买一张手机卡准备自己使用，但在激活的过程中我发现手机号可以自由选择的。激活时，系统会提供一个号码的页面，页面里有几十个号码可供挑选，并且可以“换一批”，于是我打算“自定义”手机号试一试，当然这个“自定义”并不可能完全的自己去编写你想要的手机号，而是在系统提供的所有号码中，选择你最喜欢的一个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="教你&quot;自定义&quot;选择手机号码">
+<meta property="og:url" content="https://blog.gobyte.cn/post/55ff314c.html">
+<meta property="og:site_name" content="山岚博客">
+<meta property="og:description" content="声明本教程仅以技术交流为前提，不得违反法律法规，否则一切责任由操作者自行承担。  1. 缘由起初是自己在网上购买一张手机卡准备自己使用，但在激活的过程中我发现手机号可以自由选择的。激活时，系统会提供一个号码的页面，页面里有几十个号码可供挑选，并且可以“换一批”，于是我打算“自定义”手机号试一试，当然这个“自定义”并不可能完全的自己去编写你想要的手机号，而是在系统提供的所有号码中，选择你最喜欢的一个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://p1-tt.byteimg.com/large/pgc-image/70383a6d4c304d1f90d7b6011f7456dd">
+<meta property="og:image" content="https://p3-tt.byteimg.com/large/pgc-image/9119413e87874adbb31fedc4bfcd69cd">
+<meta property="og:image" content="https://p6-tt.byteimg.com/large/pgc-image/b25d9354ca3f46e69f49bbb7f492c65b">
+<meta property="og:image" content="https://p6-tt.byteimg.com/large/pgc-image/a3bfbaa514e94a0f93e7b2d4f360e26e">
+<meta property="og:image" content="https://p3-tt.byteimg.com/large/pgc-image/40bd8a39e2e24586a8bb6731664edbbe">
+<meta property="og:image" content="https://p1-tt.byteimg.com/large/pgc-image/a15b99b7f5d042fab69607b5c369fc0e">
+<meta property="og:image" content="https://p6-tt.byteimg.com/large/pgc-image/eed1d064fa0840b4ba6120445ca64f0e">
+<meta property="article:published_time" content="2019-06-18T12:59:14.000Z">
+<meta property="article:modified_time" content="2020-02-06T12:09:13.742Z">
+<meta property="article:author" content="山岚">
+<meta property="article:tag" content="自定义手机号">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://p1-tt.byteimg.com/large/pgc-image/70383a6d4c304d1f90d7b6011f7456dd">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.gobyte.cn/post/55ff314c.html">
+  
+    <link rel="alternate" href="/atom.xml" title="山岚博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/shan-2.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/shanlanCoding" target="_blank">
+          <img class="img-circle img-rotate" src="/images/ha-002-small.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">山岚</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">半吊子全栈开发者</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Work in Home; Home is in 0713</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links/">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>人生短短几个秋</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/windows/">windows</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8F%98%E5%BE%97%E6%9B%B4%E5%A5%BD/">变得更好</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E6%83%85/">心情</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%89%8B%E6%9C%BA/">手机</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B1%82%E8%81%8C/">求职</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%AA%9A%E6%93%8D%E4%BD%9C/">骚操作</a><span class="category-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoJs/" rel="tag">AutoJs</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">Java面试题</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/" rel="tag">Shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/centOS/" rel="tag">centOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E5%9F%BA%E7%A1%80/" rel="tag">java基础</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" rel="tag">java集合框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows-10/" rel="tag">windows 10</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" rel="tag">人脸识别</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" rel="tag">博客优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%90%E6%A7%BD/" rel="tag">吐槽</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E7%B1%B36/" rel="tag">小米6</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" rel="tag">思维改变</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%8B%E6%9C%BA/" rel="tag">手机</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" rel="tag">浏览器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%88%AC%E8%99%AB/" rel="tag">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" rel="tag">自定义手机号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%94%AE%E7%9B%98/" rel="tag">键盘</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/AutoJs/" style="font-size: 13.4px;">AutoJs</a> <a href="/tags/Git/" style="font-size: 13.4px;">Git</a> <a href="/tags/Hexo/" style="font-size: 13.8px;">Hexo</a> <a href="/tags/Java/" style="font-size: 13px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 13.2px;">JavaScript</a> <a href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" style="font-size: 13.6px;">Java面试题</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/Shell/" style="font-size: 13px;">Shell</a> <a href="/tags/centOS/" style="font-size: 13px;">centOS</a> <a href="/tags/java%E5%9F%BA%E7%A1%80/" style="font-size: 13px;">java基础</a> <a href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" style="font-size: 13px;">java集合框架</a> <a href="/tags/linux/" style="font-size: 13px;">linux</a> <a href="/tags/nginx/" style="font-size: 13.2px;">nginx</a> <a href="/tags/vue/" style="font-size: 13px;">vue</a> <a href="/tags/windows-10/" style="font-size: 13px;">windows 10</a> <a href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" style="font-size: 13px;">人脸识别</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" style="font-size: 13px;">博客优化</a> <a href="/tags/%E5%90%90%E6%A7%BD/" style="font-size: 13px;">吐槽</a> <a href="/tags/%E5%B0%8F%E7%B1%B36/" style="font-size: 13px;">小米6</a> <a href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" style="font-size: 13px;">思维改变</a> <a href="/tags/%E6%89%8B%E6%9C%BA/" style="font-size: 13px;">手机</a> <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" style="font-size: 13px;">浏览器</a> <a href="/tags/%E7%88%AC%E8%99%AB/" style="font-size: 13px;">爬虫</a> <a href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" style="font-size: 13px;">自定义手机号</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" style="font-size: 13px;">路由器</a> <a href="/tags/%E9%94%AE%E7%9B%98/" style="font-size: 13px;">键盘</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/cbfeffee.html" class="title">警惕！IKBC机械键盘寿命离谱，满打满算一年不要！入手须慎重！</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-12T09:31:09.000Z" itemprop="datePublished">2021-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Python/">Python</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/615d4220.html" class="title">51cto视频解析下载过程分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-04T10:48:29.000Z" itemprop="datePublished">2021-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/e56fdb88.html" class="title">pure主题valine留言板添加：昵称、邮箱必填必写功能</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-22T12:47:06.000Z" itemprop="datePublished">2020-05-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/5613105b.html" class="title">error:Missmatchins image and device刷机报错解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-06T14:28:21.000Z" itemprop="datePublished">2020-05-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/46726573.html" class="title">解决微软EDGE浏览器在线大声朗读语音卡顿问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-15T15:22:25.000Z" itemprop="datePublished">2020-03-15</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#声明"><span class="toc-number">1.</span> <span class="toc-text">声明</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#1-缘由"><span class="toc-number">2.</span> <span class="toc-text">1. 缘由</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-如何找到所有的号码？"><span class="toc-number">3.</span> <span class="toc-text">2. 如何找到所有的号码？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-那么如何知道目前号码池一共有多少个手机号呢？"><span class="toc-number">4.</span> <span class="toc-text">3. 那么如何知道目前号码池一共有多少个手机号呢？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-请求号码池内的所有号码"><span class="toc-number">5.</span> <span class="toc-text">4. 请求号码池内的所有号码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#5-处理-筛选号码"><span class="toc-number">6.</span> <span class="toc-text">5. 处理&#x2F;筛选号码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#6-利用软件，筛选出靓号"><span class="toc-number">7.</span> <span class="toc-text">6. 利用软件，筛选出靓号</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#7-使用浏览器的开发者工具，进行选号"><span class="toc-number">8.</span> <span class="toc-text">7. 使用浏览器的开发者工具，进行选号</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结："><span class="toc-number">9.</span> <span class="toc-text">总结：</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-教你自定义选择手机号码" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header" name="标题头部>
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      教你&#34;自定义&#34;选择手机号码
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/post/55ff314c.html" class="article-date">
+	  <time datetime="2019-06-18T12:59:14.000Z" itemprop="datePublished">2019-06-18</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E9%AA%9A%E6%93%8D%E4%BD%9C/">骚操作</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" rel="tag">自定义手机号</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/post/55ff314c.html#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody" name="正文">
+      
+        <h1 id="声明"><a href="#声明" class="headerlink" title="声明"></a>声明</h1><p>本教程仅以技术交流为前提，<strong>不得违反法律法规</strong>，否则一切责任由操作者自行承担。</p>
+<hr>
+<h1 id="1-缘由"><a href="#1-缘由" class="headerlink" title="1. 缘由"></a>1. 缘由</h1><p>起初是自己在网上购买一张手机卡准备自己使用，但在激活的过程中我发现手机号可以自由选择的。激活时，系统会提供一个号码的页面，页面里有几十个号码可供挑选，并且可以“换一批”，于是我打算“自定义”手机号试一试，当然这个“自定义”并不可能完全的自己去编写你想要的手机号，而是在系统提供的所有号码中，选择你最喜欢的一个。一般而言，系统会提供几千至几万个号码可供挑选，所以比你在页面的选择余地大了很多倍。</p>
+<p><strong>号码列表如下图</strong>：</p>
+<p><img src="https://p1-tt.byteimg.com/large/pgc-image/70383a6d4c304d1f90d7b6011f7456dd" alt="号码列表"></p>
+<h1 id="2-如何找到所有的号码？"><a href="#2-如何找到所有的号码？" class="headerlink" title="2. 如何找到所有的号码？"></a>2. 如何找到所有的号码？</h1><p>通过分析电脑浏览器，分析页面，可以得知浏览器会向服务器请求一些参数，然后服务器会根据参数返回一些手机号。具体参数如下图：</p>
+<p><img src="https://p3-tt.byteimg.com/large/pgc-image/9119413e87874adbb31fedc4bfcd69cd" alt="服务器返回的参数"></p>
+<p>一共有9个参数，我们只需要关心<code>pageSize</code>这个参数即可。因为它代表着我们一次能获取多少个号码。</p>
+<h1 id="3-那么如何知道目前号码池一共有多少个手机号呢？"><a href="#3-那么如何知道目前号码池一共有多少个手机号呢？" class="headerlink" title="3. 那么如何知道目前号码池一共有多少个手机号呢？"></a>3. 那么如何知道目前号码池一共有多少个手机号呢？</h1><p>答案也非常简单。</p>
+<p>当我把上述参数配置好以后，请求服务器，服务器会返回JSON格式的字符串，具体如下：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line"><span class="attr">"bean"</span>: &#123;</span><br><span class="line">    <span class="attr">"cityCode"</span>: <span class="string">"0816"</span>,</span><br><span class="line">    <span class="attr">"hss"</span>: <span class="string">"HL***"</span>,</span><br><span class="line">    <span class="attr">"pageCount"</span>: <span class="string">"10922"</span>,</span><br><span class="line">    <span class="attr">"pageNum"</span>: <span class="string">"1"</span>,</span><br><span class="line">    <span class="attr">"pageSize"</span>: <span class="string">"5"</span>,</span><br><span class="line">    <span class="attr">"phoneType"</span>: <span class="string">"0"</span>,</span><br><span class="line">    <span class="attr">"phoneTypeName"</span>: <span class="string">"非三同"</span>,</span><br><span class="line">    <span class="attr">"provCode"</span>: <span class="string">"280"</span>,</span><br><span class="line">    <span class="attr">"reginCode"</span>: <span class="string">"12"</span>,</span><br><span class="line">    <span class="attr">"stateType"</span>: <span class="string">"28"</span>,</span><br><span class="line">    <span class="attr">"totalCount"</span>: <span class="string">"54610"</span>,</span><br><span class="line">    <span class="attr">"transactionId"</span>: <span class="string">"1085**********************"</span></span><br><span class="line">&#125;,</span><br><span class="line"><span class="attr">"beans"</span>: [</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"phoneNo"</span>: <span class="string">"15196263985"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"phoneNo"</span>: <span class="string">"18780353629"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"phoneNo"</span>: <span class="string">"15182301620"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"phoneNo"</span>: <span class="string">"15892655729"</span></span><br><span class="line">&#125;,</span><br><span class="line">&#123;</span><br><span class="line">    <span class="attr">"phoneNo"</span>: <span class="string">"15281683225"</span></span><br><span class="line">&#125;</span><br><span class="line">],</span><br><span class="line"><span class="attr">"returnCode"</span>: <span class="string">"0000"</span>,</span><br><span class="line"><span class="attr">"returnMessage"</span>: <span class="string">"号码列表查询成功"</span>,</span><br><span class="line"><span class="attr">"timeStamp"</span>: <span class="string">"1560863581187"</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>上述的JSON字符串中，带<em>符号的我替换了。此时我们应该注意到<code>totalCount</code>字段。该字段其实就是代表目前号码池有多少个号码，也就是说，在我本次请求服务器后，目前号码池一共有*</em>54610**个号码可以供我们选择。</p>
+<p>既然知道了号码池总数，剩下的是我们只需要把该号码都请求出来，然后直接挑选即可。</p>
+<h1 id="4-请求号码池内的所有号码"><a href="#4-请求号码池内的所有号码" class="headerlink" title="4. 请求号码池内的所有号码"></a>4. 请求号码池内的所有号码</h1><p>回到步骤2，修改请求参数字段<code>pageSize</code>,把值改成<code>54610</code></p>
+<p>所以最终参数应该如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">hss: HL***</span><br><span class="line">provCode: 280</span><br><span class="line">cityCode: 0816</span><br><span class="line">pageNum: 1</span><br><span class="line">pageSize: 54610</span><br><span class="line">phoneType: 0</span><br><span class="line">transactionId: 10852*****************</span><br><span class="line">stateType: 28</span><br><span class="line">reginCode: 12</span><br></pre></td></tr></table></figure>
+
+<p>最后发送请求至服务器，不出意外的话，服务器将会返回给我们一个携带有54610个号码的JSON字符串，如下图：</p>
+<p><img src="https://p6-tt.byteimg.com/large/pgc-image/b25d9354ca3f46e69f49bbb7f492c65b" alt="所有号码"></p>
+<h1 id="5-处理-筛选号码"><a href="#5-处理-筛选号码" class="headerlink" title="5. 处理/筛选号码"></a>5. 处理/筛选号码</h1><p>由于号码都是json格式，这个时候我们应该对号码进行处理，以便于后续能够被靓号筛选软件使用。</p>
+<p>处理该json格式的字符串我使用的是文本编辑器“editplus”，你们也可以使用“notepad++”。</p>
+<p>处理方法简单：</p>
+<ol>
+<li><p>在页面上全选所有内容、复制</p>
+</li>
+<li><p>打开editplus，粘贴</p>
+</li>
+<li><p>选择字符串：<code>&quot;},{&quot;phoneNo&quot;:&quot;</code>，Ctrl+H快捷键，替换</p>
+</li>
+<li><p>替换时，勾选“使用正则表达式”</p>
+</li>
+<li><p>修改字符串：<code>&quot;},{&quot;phoneNo&quot;:&quot;</code>，让它不被正则表达式转义，最终为：<code>\&quot;\},\{\&quot;phoneNo\&quot;:\&quot;</code></p>
+</li>
+<li><p>增加替换的内容为：<code>\n</code>，这个是换行键的转义符。通常一个回车键是由”换行+回车“两种符号组成。但是在editplus软件中，只需要有换行符号就行，所以我们只需要填写<code>\n</code>，其他的软件可能要填写成<code>\r\n</code>。这些只要学过编程的同学，应该都知道。再说一个小知识点，win下换行符是<code>\r\n</code>（两个字符）；Linux 下换行符是 <code>\n</code>；Mac 下换行符是 <code>\r</code></p>
+</li>
+<li><p>最后，点击“全部替换”按钮</p>
+</li>
+<li><p>最终替换界面和替换效果如下图：</p>
+<p><img src="https://p6-tt.byteimg.com/large/pgc-image/a3bfbaa514e94a0f93e7b2d4f360e26e" alt="替换字符串"></p>
+<p><img src="https://p3-tt.byteimg.com/large/pgc-image/40bd8a39e2e24586a8bb6731664edbbe" alt="替换效果"></p>
+</li>
+</ol>
+<h1 id="6-利用软件，筛选出靓号"><a href="#6-利用软件，筛选出靓号" class="headerlink" title="6. 利用软件，筛选出靓号"></a>6. 利用软件，筛选出靓号</h1><p>在第五步骤的时候，已经把json字符串中不必要的文本已经替换成换行了，接下来是利用软件，对这些号码进行筛选，从而能分辨出那些是靓号。</p>
+<p>靓号筛选软件比较多，我这里不做推荐，有兴趣的同学可以自行搜索一下，我贴出我的筛选成果，如下图：</p>
+<p><img src="https://p1-tt.byteimg.com/large/pgc-image/a15b99b7f5d042fab69607b5c369fc0e" alt="靓号"></p>
+<h1 id="7-使用浏览器的开发者工具，进行选号"><a href="#7-使用浏览器的开发者工具，进行选号" class="headerlink" title="7. 使用浏览器的开发者工具，进行选号"></a>7. 使用浏览器的开发者工具，进行选号</h1><p>上一步骤中，我们已经成功的筛选出心怡的手机号了。此时我们利用浏览器的开发则工具，修改页面里</p>
+<p><img src="https://p6-tt.byteimg.com/large/pgc-image/eed1d064fa0840b4ba6120445ca64f0e" alt="修改dom"></p>
+<p>将页面里的号码，修改我们从号码池里挑选出来的号码，然后点击。</p>
+<p>此时浏览器会继续向服务器发送请求，当然发送的号码就是你刚刚修改的号码。</p>
+<p>后续就是按照流程上传你本人的身份证照片，以及人脸视频，然后耐心等待认证成功的短信提醒。</p>
+<h1 id="总结："><a href="#总结：" class="headerlink" title="总结："></a>总结：</h1><p>“自定义”号码主要是从号码池中选择你喜欢的号码，并不是真正的自定义。本文主要是提供一个思路，让你能够在短时间内获取号码池的所有号码，从而达到”自定义“的目的，所以本文中的关键信息都已经被隐去。另外阅读本文需要少许的编程知识，希望通过本文能够给你带来不一样的体验。</p>
+<p><strong>最后感谢占用您宝贵的时间来阅读本文，如有问题还请留言，我将知无不言。</strong></p>
+
+      
+    </div>
+
+    <div class="article-footer" name="文章脚部">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.gobyte.cn/post/55ff314c.html" title="教你&#34;自定义&#34;选择手机号码" target="_blank" rel="external">https://blog.gobyte.cn/post/55ff314c.html</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/shanlanCoding" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/ha-002-small.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/shanlanCoding" target="_blank"><span class="text-dark">山岚</span><small class="ml-1x">半吊子全栈开发者</small></a></h3>
+        <div>大龄萌新；新时代福娃；喜欢东搞西搞；对待问题有独到的见解；</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+    <div class="bar-inner">
+        
+            <ul class="pager pull-left">
+                
+                    <li class="prev">
+                        <a href="/post/32b605b3.html" title="篡改页面的Js代码，从而达到&#34;为所欲为&#34;的目的"><i
+                                    class="icon icon-angle-left"
+                                    aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+                    </li>
+                
+                
+                    <li class="next">
+                        <a href="/post/b5463510.html"
+                           title="netlify服务器自定义域名添加自定义证书开启HTTPS的正确方法"><span>下一篇&nbsp;&nbsp;</span><i
+                                    class="icon icon-angle-right" aria-hidden="true"></i></a>
+                    </li>
+                
+                
+                    <li class="toggle-toc">
+                        <a class="toggle-btn collapsed" style="color: red" data-toggle="collapse" href="#collapseToc"
+                           aria-expanded="false" title="文章目录" role="button">
+                            <span>[&nbsp;</span><span>文章目录</span>
+                            <i class="text-collapsed icon icon-anchor"></i>
+                            <i class="text-in icon icon-close"></i>
+                            <span>]</span>
+                        </a>
+                    </li>
+                
+            </ul>
+        
+        
+
+        <div class="bar-right">
+            
+        </div>
+    </div>
+</nav>
+  
+
+
+
+  	<script>
+	  <!-- 百度站长自动推送链接 -->
+		(function(){
+		var bp = document.createElement('script');
+		var curProtocol = window.location.protocol.split(':')[0];
+		if (curProtocol === 'https') {
+			bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+		}
+		else {
+			bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		}
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+
+
+	<div class="powered-by" name="不蒜子" sytle="font-size:12px">
+		<i class="icon icon-users"></i>
+		<span id="busuanzi_container_site_uv">
+			总访客 : <span id="busuanzi_value_site_uv"></span>
+		</span><br/>
+		<i class="icon icon-eye-fill"></i>
+		<span id="busuanzi_container_site_pv">
+		    总阅读 : <span id="busuanzi_value_site_pv"></span>
+		</span>
+	</div>
+    
+	<div class="copyright" name="作者">
+		
+		<div class="publishby">
+			Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+		</div>
+	</div>
+
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+
+<script>
+	window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+
+		<!-- 百度统计 -script.ejs --> 
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "https://hm.baidu.com/hm.js?e003775b21b75a71e1396c1fc395cce7";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+
+		<!-- 新浪云防盗链 -->
+		var link = "" ;
+		setTimeout( function(){
+			$("img").each( (i,o) => {
+				var o = $(o);
+				if(o.attr("src").indexOf("sinaimg") > 0 ){
+					o.attr("referrerpolicy","no-referrer");
+					link = o.attr("src");
+					o.attr("src",link);
+				}
+			});
+		},1000);
+
+</script>
+
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+
+	
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+
+  var GUEST = ['nick', 'mail', 'link'];
+
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+
+  var requiredFields = 'mail';
+  requiredFields  = requiredFields.split(',');
+
+
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'X8D7PdERV4O24r3mDuwHflNP-MdYXbMMI',
+    appKey: 'YRKVeK33SutYf7IlMsBlWJI0',
+    placeholder: '正确填写邮箱, 才能及时收到回复哦♪(^∇^*)',
+    avatar: 'robohash',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false,
+    requiredFields: requiredFields,
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

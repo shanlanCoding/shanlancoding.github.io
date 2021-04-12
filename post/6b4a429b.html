@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+  <meta charset="utf-8">
+  
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+  <meta name="renderer" content="webkit">
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="format-detection" content="telephone=no,email=no,adress=no">
+  <!-- Color theme for statusbar -->
+  <meta name="theme-color" content="#000000" />
+  <!-- 强制页面在当前窗口以独立页面显示,防止别人在框架里调用页面 -->
+  <meta http-equiv="window-target" content="_top" />
+  
+  
+  <title>React入门学习--状态提升 | 山岚 - 90码农历险记</title>
+  <meta name="description" content="什么是状态提升？官网是这样解释的：  通常，多个组件需要反映相同的变化数据，这时我们建议将共享状态提升到最近的共同父组件中去。  我对“状态提升”的理解是，子组件A和子组件B需要进行数据交换&#x2F;共享，则需要把他们俩需要交换数据的变量temp，放在他们最近的共同父组件内创建。这样，这两个子组件都可以访问到temp变量，并且还可以对temp变量进行修改。 说人话，“状态提升”可以帮你解决不同组件之间的赋">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React入门学习--状态提升">
+<meta property="og:url" content="https://blog.gobyte.cn/post/6b4a429b.html">
+<meta property="og:site_name" content="山岚博客">
+<meta property="og:description" content="什么是状态提升？官网是这样解释的：  通常，多个组件需要反映相同的变化数据，这时我们建议将共享状态提升到最近的共同父组件中去。  我对“状态提升”的理解是，子组件A和子组件B需要进行数据交换&#x2F;共享，则需要把他们俩需要交换数据的变量temp，放在他们最近的共同父组件内创建。这样，这两个子组件都可以访问到temp变量，并且还可以对temp变量进行修改。 说人话，“状态提升”可以帮你解决不同组件之间的赋">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://zh-hans.reactjs.org/react-devtools-state-ef94afc3447d75cdc245c77efb0d63be.gif">
+<meta property="article:published_time" content="2019-08-21T01:22:17.000Z">
+<meta property="article:modified_time" content="2020-02-05T14:15:30.302Z">
+<meta property="article:author" content="山岚">
+<meta property="article:tag" content="React">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://zh-hans.reactjs.org/react-devtools-state-ef94afc3447d75cdc245c77efb0d63be.gif">
+  <!-- Canonical links -->
+  <link rel="canonical" href="https://blog.gobyte.cn/post/6b4a429b.html">
+  
+    <link rel="alternate" href="/atom.xml" title="山岚博客" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/shan-2.png" type="image/x-icon">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+  
+  
+  
+<meta name="generator" content="Hexo 4.2.1"></head>
+
+
+<body class="main-center theme-black" itemscope itemtype="http://schema.org/WebPage">
+  <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+  <div class="slimContent">
+    <div class="navbar-header">
+      
+      
+      <div class="profile-block text-center">
+        <a id="avatar" href="https://github.com/shanlanCoding" target="_blank">
+          <img class="img-circle img-rotate" src="/images/ha-002-small.png" width="200" height="200">
+        </a>
+        <h2 id="name" class="hidden-xs hidden-sm">山岚</h2>
+        <h3 id="title" class="hidden-xs hidden-sm hidden-md">半吊子全栈开发者</h3>
+        <small id="location" class="text-muted hidden-xs hidden-sm"><i class="icon icon-map-marker"></i> Work in Home; Home is in 0713</small>
+      </div>
+      
+      <div class="search" id="search-form-wrap">
+
+    <form class="search-form sidebar-form">
+        <div class="input-group">
+            <input type="text" class="search-form-input form-control" placeholder="搜索" />
+            <span class="input-group-btn">
+                <button type="submit" class="search-form-submit btn btn-flat" onclick="return false;"><i class="icon icon-search"></i></button>
+            </span>
+        </div>
+    </form>
+    <div class="ins-search">
+  <div class="ins-search-mask"></div>
+  <div class="ins-search-container">
+    <div class="ins-input-wrapper">
+      <input type="text" class="ins-search-input" placeholder="想要查找什么..." x-webkit-speech />
+      <button type="button" class="close ins-close ins-selectable" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+    </div>
+    <div class="ins-section-wrapper">
+      <div class="ins-section-container"></div>
+    </div>
+  </div>
+</div>
+
+
+</div>
+      <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#main-navbar" aria-controls="main-navbar" aria-expanded="false">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <nav id="main-navbar" class="collapse navbar-collapse" itemscope itemtype="http://schema.org/SiteNavigationElement" role="navigation">
+      <ul class="nav navbar-nav main-nav menu-highlight">
+        
+        
+        <li class="menu-item menu-item-home">
+          <a href="/.">
+            
+            <i class="icon icon-home-fill"></i>
+            
+            <span class="menu-title">首页</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/">
+            
+            <i class="icon icon-archives-fill"></i>
+            
+            <span class="menu-title">归档</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/">
+            
+            <i class="icon icon-folder"></i>
+            
+            <span class="menu-title">分类</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/">
+            
+            <i class="icon icon-tags"></i>
+            
+            <span class="menu-title">标签</span>
+          </a>
+        </li>
+        
+        
+        <li class="menu-item menu-item-links">
+          <a href="/links/">
+            
+            <i class="icon icon-friendship"></i>
+            
+            <span class="menu-title">友链</span>
+          </a>
+        </li>
+        
+      </ul>
+      
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+    </nav>
+  </div>
+</header>
+
+  
+    <aside class="sidebar" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    
+      <div class="widget">
+    <h3 class="widget-title">公告</h3>
+    <div class="widget-body">
+        <div id="board">
+            <div class="content">
+                <p>人生短短几个秋</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget-body">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Java/">Java</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/JavaScript/">JavaScript</a><span class="category-list-count">3</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/Python/">Python</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/windows/">windows</a><span class="category-list-count">2</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a><span class="category-list-count">10</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a><span class="category-list-count">8</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%8F%98%E5%BE%97%E6%9B%B4%E5%A5%BD/">变得更好</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E5%BF%83%E6%83%85/">心情</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%89%8B%E6%9C%BA/">手机</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a><span class="category-list-count">5</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%B1%82%E8%81%8C/">求职</a><span class="category-list-count">4</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E9%AA%9A%E6%93%8D%E4%BD%9C/">骚操作</a><span class="category-list-count">3</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget-body">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/AutoJs/" rel="tag">AutoJs</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Git/" rel="tag">Git</a><span class="tag-list-count">3</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a><span class="tag-list-count">6</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java/" rel="tag">Java</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/JavaScript/" rel="tag">JavaScript</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" rel="tag">Java面试题</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React/" rel="tag">React</a><span class="tag-list-count">8</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Shell/" rel="tag">Shell</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/centOS/" rel="tag">centOS</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E5%9F%BA%E7%A1%80/" rel="tag">java基础</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" rel="tag">java集合框架</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/linux/" rel="tag">linux</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a><span class="tag-list-count">2</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/vue/" rel="tag">vue</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/windows-10/" rel="tag">windows 10</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" rel="tag">人脸识别</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" rel="tag">博客优化</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%90%90%E6%A7%BD/" rel="tag">吐槽</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E5%B0%8F%E7%B1%B36/" rel="tag">小米6</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" rel="tag">思维改变</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%89%8B%E6%9C%BA/" rel="tag">手机</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" rel="tag">浏览器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E7%88%AC%E8%99%AB/" rel="tag">爬虫</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" rel="tag">自定义手机号</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" rel="tag">路由器</a><span class="tag-list-count">1</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/%E9%94%AE%E7%9B%98/" rel="tag">键盘</a><span class="tag-list-count">1</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget-body tagcloud">
+      <a href="/tags/AutoJs/" style="font-size: 13.4px;">AutoJs</a> <a href="/tags/Git/" style="font-size: 13.4px;">Git</a> <a href="/tags/Hexo/" style="font-size: 13.8px;">Hexo</a> <a href="/tags/Java/" style="font-size: 13px;">Java</a> <a href="/tags/JavaScript/" style="font-size: 13.2px;">JavaScript</a> <a href="/tags/Java%E9%9D%A2%E8%AF%95%E9%A2%98/" style="font-size: 13.6px;">Java面试题</a> <a href="/tags/React/" style="font-size: 14px;">React</a> <a href="/tags/Shell/" style="font-size: 13px;">Shell</a> <a href="/tags/centOS/" style="font-size: 13px;">centOS</a> <a href="/tags/java%E5%9F%BA%E7%A1%80/" style="font-size: 13px;">java基础</a> <a href="/tags/java%E9%9B%86%E5%90%88%E6%A1%86%E6%9E%B6/" style="font-size: 13px;">java集合框架</a> <a href="/tags/linux/" style="font-size: 13px;">linux</a> <a href="/tags/nginx/" style="font-size: 13.2px;">nginx</a> <a href="/tags/vue/" style="font-size: 13px;">vue</a> <a href="/tags/windows-10/" style="font-size: 13px;">windows 10</a> <a href="/tags/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB/" style="font-size: 13px;">人脸识别</a> <a href="/tags/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/" style="font-size: 13px;">博客优化</a> <a href="/tags/%E5%90%90%E6%A7%BD/" style="font-size: 13px;">吐槽</a> <a href="/tags/%E5%B0%8F%E7%B1%B36/" style="font-size: 13px;">小米6</a> <a href="/tags/%E6%80%9D%E7%BB%B4%E6%94%B9%E5%8F%98/" style="font-size: 13px;">思维改变</a> <a href="/tags/%E6%89%8B%E6%9C%BA/" style="font-size: 13px;">手机</a> <a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8/" style="font-size: 13px;">浏览器</a> <a href="/tags/%E7%88%AC%E8%99%AB/" style="font-size: 13px;">爬虫</a> <a href="/tags/%E8%87%AA%E5%AE%9A%E4%B9%89%E6%89%8B%E6%9C%BA%E5%8F%B7/" style="font-size: 13px;">自定义手机号</a> <a href="/tags/%E8%B7%AF%E7%94%B1%E5%99%A8/" style="font-size: 13px;">路由器</a> <a href="/tags/%E9%94%AE%E7%9B%98/" style="font-size: 13px;">键盘</a>
+    </div>
+  </div>
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget-body">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/04/">四月 2021</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/05/">五月 2020</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/03/">三月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/02/">二月 2020</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2020/01/">一月 2020</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/12/">十二月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/11/">十一月 2019</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/10/">十月 2019</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/09/">九月 2019</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/08/">八月 2019</a><span class="archive-list-count">11</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/07/">七月 2019</a><span class="archive-list-count">9</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2019/06/">六月 2019</a><span class="archive-list-count">9</span></li></ul>
+    </div>
+  </div>
+
+
+    
+      
+  <div class="widget">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget-body">
+      <ul class="recent-post-list list-unstyled no-thumbnail">
+        
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E7%94%9F%E6%B4%BB/">生活</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/cbfeffee.html" class="title">警惕！IKBC机械键盘寿命离谱，满打满算一年不要！入手须慎重！</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-12T09:31:09.000Z" itemprop="datePublished">2021-04-12</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/Python/">Python</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/615d4220.html" class="title">51cto视频解析下载过程分析</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2021-04-04T10:48:29.000Z" itemprop="datePublished">2021-04-04</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%8D%9A%E5%AE%A2%E4%BC%98%E5%8C%96/">博客优化</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/e56fdb88.html" class="title">pure主题valine留言板添加：昵称、邮箱必填必写功能</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-22T12:47:06.000Z" itemprop="datePublished">2020-05-22</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E8%AE%BE%E5%A4%87/">设备</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/5613105b.html" class="title">error:Missmatchins image and device刷机报错解决方法</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-05-06T14:28:21.000Z" itemprop="datePublished">2020-05-06</time>
+              </p>
+            </div>
+          </li>
+          
+          <li>
+            
+            <div class="item-inner">
+              <p class="item-category">
+                <a class="category-link" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a>
+              </p>
+              <p class="item-title">
+                <a href="/post/46726573.html" class="title">解决微软EDGE浏览器在线大声朗读语音卡顿问题</a>
+              </p>
+              <p class="item-date">
+                <time datetime="2020-03-15T15:22:25.000Z" itemprop="datePublished">2020-03-15</time>
+              </p>
+            </div>
+          </li>
+          
+      </ul>
+    </div>
+  </div>
+  
+
+    
+  </div>
+</aside>
+
+  
+  
+<aside class="sidebar sidebar-toc collapse" id="collapseToc" itemscope itemtype="http://schema.org/WPSideBar">
+  <div class="slimContent">
+    <nav id="toc" class="article-toc">
+      <h3 class="toc-title">文章目录</h3>
+      <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#什么是状态提升？"><span class="toc-number">1.</span> <span class="toc-text">什么是状态提升？</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#详细代码执行流程"><span class="toc-number">2.</span> <span class="toc-text">详细代码执行流程</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-首先React先挂载Calculator组件。而Calculator组件会调用render-渲染页面UI"><span class="toc-number">2.1.</span> <span class="toc-text">1.首先React先挂载Calculator组件。而Calculator组件会调用render()渲染页面UI</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Calculator组件的render-内定义一些变量接收数据。其中用到了三元表达式来调用温度单位换算或者赋值"><span class="toc-number">2.2.</span> <span class="toc-text">2. Calculator组件的render()内定义一些变量接收数据。其中用到了三元表达式来调用温度单位换算或者赋值</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-在Calculator组件的render-内的return-有三个组件。"><span class="toc-number">2.3.</span> <span class="toc-text">3.在Calculator组件的render()内的return()有三个组件。</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#A-两个输入框组件：TemperatureInput"><span class="toc-number">2.3.1.</span> <span class="toc-text">A. 两个输入框组件：TemperatureInput</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-TemperatureInput输入框组件需要接收3个参数：scale温度符号、temperature温度数值、onTemperatureChange调用哪个温度单位转换函数"><span class="toc-number">2.3.1.1.</span> <span class="toc-text">1. TemperatureInput输入框组件需要接收3个参数：scale温度符号、temperature温度数值、onTemperatureChange调用哪个温度单位转换函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-在render-内接受父组件Calculator的值，例如温度temperature，以及onChange事件执行函数"><span class="toc-number">2.3.1.2.</span> <span class="toc-text">2. 在render()内接受父组件Calculator的值，例如温度temperature，以及onChange事件执行函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-该组件的render-会渲染出一个输入框"><span class="toc-number">2.3.1.3.</span> <span class="toc-text">3. 该组件的render()会渲染出一个输入框</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-上面的input框有一个onChange事件，调用了handleChange-方法，代码如下："><span class="toc-number">2.3.1.4.</span> <span class="toc-text">4. 上面的input框有一个onChange事件，调用了handleChange()方法，代码如下：</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#B-一个提供沸腾信息显示的BoilingVerdict，判断celsius是否大于等于100"><span class="toc-number">2.3.2.</span> <span class="toc-text">B. 一个提供沸腾信息显示的BoilingVerdict，判断celsius是否大于等于100</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#总结"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#完整代码"><span class="toc-number">4.</span> <span class="toc-text">完整代码</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#效果图"><span class="toc-number">5.</span> <span class="toc-text">效果图</span></a></li></ol>
+    </nav>
+  </div>
+</aside>
+
+<main class="main" role="main">
+  <div class="content">
+  <article id="post-React入门学习-状态提升" class="article article-type-post" itemscope itemtype="http://schema.org/BlogPosting">
+    
+    <div class="article-header" name="标题头部>
+      
+        
+  
+    <h1 class="article-title" itemprop="name">
+      React入门学习--状态提升
+    </h1>
+  
+
+      
+      <div class="article-meta">
+        <span class="article-date">
+    <i class="icon icon-calendar-check"></i>
+	<a href="/post/6b4a429b.html" class="article-date">
+	  <time datetime="2019-08-21T01:22:17.000Z" itemprop="datePublished">2019-08-21</time>
+	</a>
+</span>
+        
+  <span class="article-category">
+    <i class="icon icon-folder"></i>
+    <a class="article-category-link" href="/categories/%E5%89%8D%E7%AB%AF/">前端</a>
+  </span>
+
+        
+  <span class="article-tag">
+    <i class="icon icon-tags"></i>
+	<a class="article-tag-link" href="/tags/React/" rel="tag">React</a>
+  </span>
+
+
+        
+	<span class="article-read hidden-xs">
+	    <i class="icon icon-eye-fill" aria-hidden="true"></i>
+	    <span id="busuanzi_container_page_pv">
+			<span id="busuanzi_value_page_pv">0</span>
+		</span>
+	</span>
+
+
+        <span class="post-comment"><i class="icon icon-comment"></i> <a href="/post/6b4a429b.html#comments" class="article-comment-link">评论</a></span>
+        
+      </div>
+    </div>
+    <div class="article-entry marked-body" itemprop="articleBody" name="正文">
+      
+        <h1 id="什么是状态提升？"><a href="#什么是状态提升？" class="headerlink" title="什么是状态提升？"></a>什么是状态提升？</h1><p>官网是这样解释的：</p>
+<blockquote>
+<p>通常，多个组件需要反映相同的变化数据，这时我们建议将共享状态提升到最近的共同父组件中去。</p>
+</blockquote>
+<p>我对“状态提升”的理解是，子组件A和子组件B需要进行<strong>数据交换/共享</strong>，则需要把他们俩需要交换数据的变量temp，放在他们最近的共同父组件内创建。这样，这两个子组件都可以访问到temp变量，并且还可以对temp变量进行修改。</p>
+<p><strong>说人话，“状态提升”可以帮你解决不同组件之间的赋值问题。</strong></p>
+<h1 id="详细代码执行流程"><a href="#详细代码执行流程" class="headerlink" title="详细代码执行流程"></a>详细代码执行流程</h1><h2 id="1-首先React先挂载Calculator组件。而Calculator组件会调用render-渲染页面UI"><a href="#1-首先React先挂载Calculator组件。而Calculator组件会调用render-渲染页面UI" class="headerlink" title="1.首先React先挂载Calculator组件。而Calculator组件会调用render()渲染页面UI"></a>1.首先React先挂载<code>Calculator</code>组件。而<code>Calculator</code>组件会调用<code>render()</code>渲染页面UI</h2><h2 id="2-Calculator组件的render-内定义一些变量接收数据。其中用到了三元表达式来调用温度单位换算或者赋值"><a href="#2-Calculator组件的render-内定义一些变量接收数据。其中用到了三元表达式来调用温度单位换算或者赋值" class="headerlink" title="2. Calculator组件的render()内定义一些变量接收数据。其中用到了三元表达式来调用温度单位换算或者赋值"></a>2. <code>Calculator</code>组件的<code>render()</code>内定义一些变量接收数据。其中用到了三元表达式来调用温度单位换算或者赋值</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 页面初始值</span><br><span class="line">const scale = this.state.scale;</span><br><span class="line">const temperature = this.state.temperature;</span><br><span class="line">// 如果是f，就调用tryConvert()进行温度换算，否则赋值temperature给scale</span><br><span class="line">const celsius =</span><br><span class="line">  scale === &quot;f&quot; ? tryConvert(temperature, toCelsius) : temperature;</span><br><span class="line">const fahrenheit =</span><br><span class="line">  scale === &quot;c&quot; ? tryConvert(temperature, toFahrenheit) : temperature;</span><br></pre></td></tr></table></figure>
+
+<h2 id="3-在Calculator组件的render-内的return-有三个组件。"><a href="#3-在Calculator组件的render-内的return-有三个组件。" class="headerlink" title="3.在Calculator组件的render()内的return()有三个组件。"></a>3.在<code>Calculator</code>组件的<code>render()</code>内的<strong><code>return()</code></strong>有三个组件。</h2><h3 id="A-两个输入框组件：TemperatureInput"><a href="#A-两个输入框组件：TemperatureInput" class="headerlink" title="A. 两个输入框组件：TemperatureInput"></a>A. 两个输入框组件：<code>TemperatureInput</code></h3><h4 id="1-TemperatureInput输入框组件需要接收3个参数：scale温度符号、temperature温度数值、onTemperatureChange调用哪个温度单位转换函数"><a href="#1-TemperatureInput输入框组件需要接收3个参数：scale温度符号、temperature温度数值、onTemperatureChange调用哪个温度单位转换函数" class="headerlink" title="1. TemperatureInput输入框组件需要接收3个参数：scale温度符号、temperature温度数值、onTemperatureChange调用哪个温度单位转换函数"></a>1. <code>TemperatureInput</code>输入框组件需要接收3个参数：<code>scale</code>温度符号、<code>temperature</code>温度数值、<code>onTemperatureChange</code>调用哪个温度单位转换函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">return (</span><br><span class="line">    &lt;div&gt;</span><br><span class="line">        &#123;/* </span><br><span class="line">              传入摄氏度</span><br><span class="line">              传入摄氏度函数</span><br><span class="line">         */&#125;</span><br><span class="line">        &lt;TemperatureInput</span><br><span class="line">            scale=&quot;c&quot;</span><br><span class="line">            temperature=&#123;celsius&#125;</span><br><span class="line">            onTemperatureChange=&#123;this.handleCelsiusChange&#125;</span><br><span class="line">        /&gt;</span><br><span class="line">        &lt;TemperatureInput</span><br><span class="line">            scale=&quot;f&quot;</span><br><span class="line">            temperature=&#123;fahrenheit&#125;</span><br><span class="line">            onTemperatureChange=&#123;this.handleFahrenheitChange&#125;</span><br><span class="line">         /&gt;</span><br><span class="line">        &lt;BoilingVerdict celsius=&#123;parseFloat(celsius)&#125; /&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">);</span><br></pre></td></tr></table></figure>
+
+<h4 id="2-在render-内接受父组件Calculator的值，例如温度temperature，以及onChange事件执行函数"><a href="#2-在render-内接受父组件Calculator的值，例如温度temperature，以及onChange事件执行函数" class="headerlink" title="2. 在render()内接受父组件Calculator的值，例如温度temperature，以及onChange事件执行函数"></a>2. 在<code>render()</code>内接受父组件<code>Calculator</code>的值，例如温度<code>temperature</code>，以及<code>onChange</code>事件执行函数</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">  // 接收父组件传递来的温度数值</span><br><span class="line">  const temperature = this.props.temperature;</span><br><span class="line">  // 接收温度标识符。如c或者f。C是摄氏度，F是华氏度</span><br><span class="line">  const scale = this.props.scale;</span><br><span class="line">  // 输入框，带有onChange处理函数</span><br><span class="line">  return (</span><br><span class="line">    &lt;fieldset&gt;</span><br><span class="line">      &lt;legend&gt;请输入温度 / &#123;scaleNames[scale]&#125;&lt;/legend&gt;</span><br><span class="line">      &lt;input value=&#123;temperature&#125; onChange=&#123;this.handleChange&#125; /&gt;</span><br><span class="line">    &lt;/fieldset&gt;</span><br><span class="line">  );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="3-该组件的render-会渲染出一个输入框"><a href="#3-该组件的render-会渲染出一个输入框" class="headerlink" title="3. 该组件的render()会渲染出一个输入框"></a>3. 该组件的<code>render()</code>会渲染出一个输入框</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">render() &#123;</span><br><span class="line">    // 接收传递来的温度数值</span><br><span class="line">    const temperature = this.props.temperature;</span><br><span class="line">    // 接收温度标识符。如c或者f。C是摄氏度，F是华氏度</span><br><span class="line">    const scale = this.props.scale;</span><br><span class="line">    // 输入框，带有onChange处理函数</span><br><span class="line">    return (</span><br><span class="line">        &lt;fieldset&gt;</span><br><span class="line">            // scaleNames[]数组里是存放华氏度和摄氏度的全称，如 c: &quot;Celsius&quot;</span><br><span class="line">            &lt;legend&gt;请输入温度 / &#123;scaleNames[scale]&#125;&lt;/legend&gt;</span><br><span class="line">            &lt;input value=&#123;temperature&#125; onChange=&#123;this.handleChange&#125; /&gt;</span><br><span class="line">        &lt;/fieldset&gt;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="4-上面的input框有一个onChange事件，调用了handleChange-方法，代码如下："><a href="#4-上面的input框有一个onChange事件，调用了handleChange-方法，代码如下：" class="headerlink" title="4. 上面的input框有一个onChange事件，调用了handleChange()方法，代码如下："></a>4. 上面的input框有一个<code>onChange</code>事件，调用了<code>handleChange()</code>方法，代码如下：</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">handleChange(e) &#123;</span><br><span class="line">    // 调用父组件的handleCelsiusChange方法。而handleCelsiusChange方法是由父组件内的this.handleCelsiusChange提供的。</span><br><span class="line">    // 而this.handleCelsiusChange是保存数据的作用，最终该数据会被tryConvert()方法调用，来做温度单位转换</span><br><span class="line">    // 这行代码是调用父组件的onTemperatureChange()方法，然后传入当前输入框的value值，也就是用户输入的数字</span><br><span class="line">    this.props.onTemperatureChange(e.target.value);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>在input输入框里输入数字的时候，会实时把value传入到 <code>this.props.onTemperatureChange(e.target.value)</code>并调用。而<code>onTemperatureChange()</code>实际上在调用<code>handleCelsiusChange()</code>来保存用户输入的数据到state内。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 保存 摄氏度 数据</span><br><span class="line">handleCelsiusChange(temperature) &#123;</span><br><span class="line">  this.setState(&#123; scale: &quot;c&quot;, temperature &#125;);</span><br><span class="line">&#125;</span><br><span class="line">// 保存 华氏度 数据</span><br><span class="line">handleFahrenheitChange(temperature) &#123;</span><br><span class="line">  this.setState(&#123; scale: &quot;f&quot;, temperature &#125;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>例如在<code>handleCelsiusChange(temperature)</code>的<code>temperature</code>就是</p>
+<h3 id="B-一个提供沸腾信息显示的BoilingVerdict，判断celsius是否大于等于100"><a href="#B-一个提供沸腾信息显示的BoilingVerdict，判断celsius是否大于等于100" class="headerlink" title="B. 一个提供沸腾信息显示的BoilingVerdict，判断celsius是否大于等于100"></a>B. 一个提供沸腾信息显示的<code>BoilingVerdict</code>，判断<code>celsius</code>是否大于等于100</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">// 是否是开水</span><br><span class="line">function BoilingVerdict(props) &#123;</span><br><span class="line">    if (props.celsius &gt;= 100) &#123;</span><br><span class="line">        return &lt;p&gt;水开了&lt;/p&gt;;</span><br><span class="line">    &#125;</span><br><span class="line">    return &lt;p&gt;水还没有沸腾&lt;/p&gt;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><ol>
+<li><p>React挂载组件<code>&lt;Calculator /&gt;</code></p>
+</li>
+<li><p><code>&lt;Calculator /&gt;</code>里，定义了初始值温度、温度单位、温度转换函数，以及渲染了2个输入框，1个文本提示。初始值均为空字符串</p>
+</li>
+<li><p>给输入框组件<code>&lt;TemperatureInput /&gt;</code>传递了三个参数：<em>scale</em>、<em>temperature</em>、<em>onTemperatureChange</em>。这三个参数初始值默认为空</p>
+<p><em>scale</em>：    温度的单位；初始值为空，后续根据用户在哪个输入框里输入，来赋值。</p>
+<p><em>temperature</em>：    已经计算好温度；初始值空字符串，后续根据用户的输入框来赋值。</p>
+<p><em>onTemperatureChange</em>：    调用父组件的<code>handleCelsiusChange</code>方法。而<code>handleCelsiusChange</code>方法是由父组件内的<code>this.handleCelsiusChange</code>提供的。而<code>this.handleCelsiusChange</code>是保存数据的作用，最终该数据会被<code>tryConvert()</code>方法调用，用来做温度单位转换。<strong>其中这个参数重中之重，因为该参数准确的作用是将父组件的方法传递给子组件调用，从而实现了子组件向父组件赋值的功能，也就是所谓的状态提升</strong></p>
+</li>
+</ol>
+<h1 id="完整代码"><a href="#完整代码" class="headerlink" title="完整代码"></a>完整代码</h1><p>完整注释：<a href="https://gist.github.com/shanlanCoding/725bc0b068f359e29f6e1bf31a1019cc" target="_blank" rel="noopener">https://gist.github.com/shanlanCoding/725bc0b068f359e29f6e1bf31a1019cc</a></p>
+<p>在线演示： <a href="https://codepen.io/gaearon/pen/WZpxpz" target="_blank" rel="noopener">https://codepen.io/gaearon/pen/WZpxpz</a></p>
+<h1 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h1><p><img src="https://zh-hans.reactjs.org/react-devtools-state-ef94afc3447d75cdc245c77efb0d63be.gif" alt="效果图"></p>
+
+      
+    </div>
+
+    <div class="article-footer" name="文章脚部">
+      <blockquote class="mt-2x">
+  <ul class="post-copyright list-unstyled">
+    
+    <li class="post-copyright-link hidden-xs">
+      <strong>本文链接：</strong>
+      <a href="https://blog.gobyte.cn/post/6b4a429b.html" title="React入门学习--状态提升" target="_blank" rel="external">https://blog.gobyte.cn/post/6b4a429b.html</a>
+    </li>
+    
+    <li class="post-copyright-license">
+      <strong>版权声明： </strong> 本博客所有文章除特别声明外，均采用 <a href="http://creativecommons.org/licenses/by/4.0/deed.zh" target="_blank" rel="external">CC BY 4.0 CN协议</a> 许可协议。转载请注明出处！
+    </li>
+  </ul>
+</blockquote>
+
+
+<div class="panel panel-default panel-badger">
+  <div class="panel-body">
+    <figure class="media">
+      <div class="media-left">
+        <a href="https://github.com/shanlanCoding" target="_blank" class="img-burn thumb-sm visible-lg">
+          <img src="/images/ha-002-small.png" class="img-rounded w-full" alt="">
+        </a>
+      </div>
+      <div class="media-body">
+        <h3 class="media-heading"><a href="https://github.com/shanlanCoding" target="_blank"><span class="text-dark">山岚</span><small class="ml-1x">半吊子全栈开发者</small></a></h3>
+        <div>大龄萌新；新时代福娃；喜欢东搞西搞；对待问题有独到的见解；</div>
+      </div>
+    </figure>
+  </div>
+</div>
+
+
+    </div>
+  </article>
+  
+    
+  <section id="comments">
+  	
+      <div id="vcomments"></div>
+    
+  </section>
+
+
+  
+</div>
+
+  <nav class="bar bar-footer clearfix" data-stick-bottom>
+    <div class="bar-inner">
+        
+            <ul class="pager pull-left">
+                
+                    <li class="prev">
+                        <a href="/post/261b7f71.html" title="React入门学习--如何完整的设计一个应用组件-持续更新中"><i
+                                    class="icon icon-angle-left"
+                                    aria-hidden="true"></i><span>&nbsp;&nbsp;上一篇</span></a>
+                    </li>
+                
+                
+                    <li class="next">
+                        <a href="/post/69d4d350.html"
+                           title="使用脚本批处理让Hexo一键部署和推送到远程仓库"><span>下一篇&nbsp;&nbsp;</span><i
+                                    class="icon icon-angle-right" aria-hidden="true"></i></a>
+                    </li>
+                
+                
+                    <li class="toggle-toc">
+                        <a class="toggle-btn collapsed" style="color: red" data-toggle="collapse" href="#collapseToc"
+                           aria-expanded="false" title="文章目录" role="button">
+                            <span>[&nbsp;</span><span>文章目录</span>
+                            <i class="text-collapsed icon icon-anchor"></i>
+                            <i class="text-in icon icon-close"></i>
+                            <span>]</span>
+                        </a>
+                    </li>
+                
+            </ul>
+        
+        
+
+        <div class="bar-right">
+            
+        </div>
+    </div>
+</nav>
+  
+
+
+
+  	<script>
+	  <!-- 百度站长自动推送链接 -->
+		(function(){
+		var bp = document.createElement('script');
+		var curProtocol = window.location.protocol.split(':')[0];
+		if (curProtocol === 'https') {
+			bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+		}
+		else {
+			bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+		}
+		var s = document.getElementsByTagName("script")[0];
+		s.parentNode.insertBefore(bp, s);
+		})();
+	</script>
+</main>
+
+  <footer class="footer" itemscope itemtype="http://schema.org/WPFooter">
+	
+	
+    <ul class="social-links">
+    	
+        <li><a href="https://github.com/shanlanCoding" target="_blank" title="Github" data-toggle=tooltip data-placement=top><i class="icon icon-github"></i></a></li>
+        
+        <li><a href="http://mail.qq.com/cgi-bin/qm_share?t=qm_mailme&email=CWRgen1se2phZnxJeHgnamZk" target="_blank" title="Email" data-toggle=tooltip data-placement=top><i class="icon icon-email"></i></a></li>
+        
+    </ul>
+
+
+
+	<div class="powered-by" name="不蒜子" sytle="font-size:12px">
+		<i class="icon icon-users"></i>
+		<span id="busuanzi_container_site_uv">
+			总访客 : <span id="busuanzi_value_site_uv"></span>
+		</span><br/>
+		<i class="icon icon-eye-fill"></i>
+		<span id="busuanzi_container_site_pv">
+		    总阅读 : <span id="busuanzi_value_site_pv"></span>
+		</span>
+	</div>
+    
+	<div class="copyright" name="作者">
+		
+		<div class="publishby">
+			Theme by <a href="https://github.com/cofess" target="_blank"> cofess </a>base on <a href="https://github.com/cofess/hexo-theme-pure" target="_blank">pure</a>.
+		</div>
+	</div>
+
+</footer>
+  <script src="//cdn.jsdelivr.net/npm/jquery@1.12.4/dist/jquery.min.js"></script>
+
+<script>
+	window.jQuery || document.write('<script src="js/jquery.min.js"><\/script>')
+
+		<!-- 百度统计 -script.ejs --> 
+		var _hmt = _hmt || [];
+		(function() {
+		  var hm = document.createElement("script");
+		  hm.src = "https://hm.baidu.com/hm.js?e003775b21b75a71e1396c1fc395cce7";
+		  var s = document.getElementsByTagName("script")[0]; 
+		  s.parentNode.insertBefore(hm, s);
+		})();
+
+		<!-- 新浪云防盗链 -->
+		var link = "" ;
+		setTimeout( function(){
+			$("img").each( (i,o) => {
+				var o = $(o);
+				if(o.attr("src").indexOf("sinaimg") > 0 ){
+					o.attr("referrerpolicy","no-referrer");
+					link = o.attr("src");
+					o.attr("src",link);
+				}
+			});
+		},1000);
+
+</script>
+
+
+<script src="/js/plugin.min.js"></script>
+
+
+<script src="/js/application.js"></script>
+
+
+    <script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+
+<script src="/js/insight.js"></script>
+
+
+
+
+
+
+
+	
+   
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+   
+    
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/valine"></script>
+  <script type="text/javascript">
+
+  var GUEST = ['nick', 'mail', 'link'];
+
+  var meta = 'nick,mail,link';
+  meta = meta.split(',').filter(function(item) {
+    return GUEST.indexOf(item) > -1;
+  });
+
+  var requiredFields = 'mail';
+  requiredFields  = requiredFields.split(',');
+
+
+  new Valine({
+    el: '#vcomments',
+    verify: false,
+    notify: false,
+    appId: 'X8D7PdERV4O24r3mDuwHflNP-MdYXbMMI',
+    appKey: 'YRKVeK33SutYf7IlMsBlWJI0',
+    placeholder: '正确填写邮箱, 才能及时收到回复哦♪(^∇^*)',
+    avatar: 'robohash',
+    meta: meta,
+    pageSize: '10' || 10,
+    visitor: false,
+    requiredFields: requiredFields,
+  });
+  </script>
+
+     
+
+
+
+
+
+
+
+</body>
+</html>

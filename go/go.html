@@ -1,0 +1,72 @@
+<html lang="zh" class="">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GoGoGo</title>
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=0"
+    />
+    <style></style>
+  <meta name="generator" content="Hexo 4.2.1"></head>
+
+  <body>
+    <a href="javascript:void(0)" class="weixin-wap-deeplink" hidden
+      >微信支付
+    </a>
+    <!-- 1.接收参数，并解析 2.将参数拼接成url，写入到a标签内 3.点击这个a标签 -->
+  </body>
+
+  <script id="INLINE_PEN_JS_ID">
+    //   初始化变量
+    var domain,
+      host,
+      protocol,
+      pathname,
+      wxPayUrl,
+      parameters = "";
+
+    // 判断当前页面是否带wxPayUrl参数，如果带，则跳转，否则停止
+    parameters = window.location.search;
+    if (parameters.indexOf("go") > -1) {
+      //   修改超级的href
+      document.querySelectorAll(
+        ".weixin-wap-deeplink"
+      )[0].href = decodeURIComponent(getSearchString("go", parameters));
+      document
+        .querySelectorAll(".weixin-wap-deeplink")[0]
+        .removeAttribute("hidden");
+      // 延时打开
+      setTimeout(() => {
+        document.querySelectorAll(".weixin-wap-deeplink")[0].click();
+      }, 1000);
+    } else {
+      document
+        .querySelectorAll(".weixin-wap-deeplink")[0]
+        .setAttribute("hidden", true);
+    }
+
+    // --------工具函数--------
+
+    //   微信支付
+    var wxPay = (url) => {
+      document.querySelectorAll(".weixin-wap-deeplink")[0].click();
+    };
+
+    //   从链接的参数中取值
+    //   key(需要检索的键） url（传入的需要分割的url地址，例：?id=2&age=18）
+    function getSearchString(key, Url) {
+      var str = Url;
+      str = str.substring(1, str.length); // 获取URL中?之后的字符（去掉第一位的问号）
+      // 以&分隔字符串，获得类似name=xiaoli这样的元素数组
+      var arr = str.split("&");
+      var obj = new Object();
+      // 将每一个数组元素以=分隔并赋给obj对象
+      for (var i = 0; i < arr.length; i++) {
+        var tmp_arr = arr[i].split("=");
+        obj[decodeURIComponent(tmp_arr[0])] = decodeURIComponent(tmp_arr[1]);
+      }
+      console.log(obj[key], obj, key);
+      return obj[key];
+    }
+  </script>
+</html>
