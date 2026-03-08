@@ -9,7 +9,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: #f4f4f9;
             display: flex;
-            justify_content: center;
+            justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
@@ -89,12 +89,12 @@
         
         <div class="form-group">
             <label>Machine ID (机器码)</label>
-            <input type="text" id="machineId" placeholder="e.g. A0B1C2D3E4F5" oninput="this.value = this.value.toUpperCase().replace(/[^A-F0-9]/g, '')" maxlength="12">
+            <input type="text" id="machineId" name="machineId" placeholder="e.g. A0B1C2D3E4F5" oninput="this.value = this.value.toUpperCase().replace(/[^A-F0-9]/g, '')" maxlength="12">
         </div>
 
         <div class="form-group">
             <label>Secret Salt (加密盐值)</label>
-            <input type="text" id="salt" value="">
+            <input type="text" id="salt" name="salt" placeholder="">
         </div>
 
         <button onclick="generate()">生成激活码 (Generate)</button>
