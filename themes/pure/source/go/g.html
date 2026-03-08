@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ESP32 Activation Code Generator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify_content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+        .card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 1rem;
+            font-family: monospace;
+        }
+        button {
+            width: 100%;
+            padding: 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .result {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: #e9ecef;
+            border-radius: 6px;
+            text-align: center;
+            font-family: monospace;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: #333;
+            word-break: break-all;
+        }
+        .copy-hint {
+            text-align: center;
+            font-size: 0.8rem;
+            color: #888;
+            margin-top: 0.5rem;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>🔐 激活码生成器</h1>
+        
+        <div class="form-group">
+            <label>Machine ID (机器码)</label>
+            <input type="text" id="machineId" placeholder="e.g. A0B1C2D3E4F5" oninput="this.value = this.value.toUpperCase().replace(/[^A-F0-9]/g, '')" maxlength="12">
+        </div>
+
+        <div class="form-group">
+            <label>Secret Salt (加密盐值)</label>
+            <input type="text" id="salt" value="">
+        </div>
+
+        <button onclick="generate()">生成激活码 (Generate)</button>
+
+        <div class="result" id="result">Waiting...</div>
+        <div class="copy-hint" id="copyHint" onclick="copyResult()">点击复制结果</div>
+    </div>
+
+    <script>
+        async function sha256(message) {
+            // encode as UTF-8
+            const msgBuffer = new TextEncoder().encode(message);
+
+            // hash the message
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+
+            // convert ArrayBuffer to Array
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+            // convert bytes to hex string
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex.toUpperCase();
+        }
+
+        async function generate() {
+            const machineId = document.getElementById('machineId').value.trim();
+            const salt = document.getElementById('salt').value;
+            const resultDiv = document.getElementById('result');
+
+            if (machineId.length < 12) {
+                resultDiv.style.color = 'red';
+                resultDiv.innerText = "Invalid ID Length";
+                return;
+            }
+
+            try {
+                const raw = machineId + salt;
+                const hash = await sha256(raw);
+                // Take first 16 characters
+                const token = hash.substring(0, 16);
+                
+                resultDiv.style.color = '#333';
+                resultDiv.innerText = token;
+            } catch (e) {
+                console.error(e);
+                resultDiv.innerText = "Error";
+            }
+        }
+
+        function copyResult() {
+            const text = document.getElementById('result').innerText;
+            if (text && text !== "Waiting..." && text !== "Error") {
+                navigator.clipboard.writeText(text).then(() => {
+                    document.getElementById('copyHint').innerText = "已复制! (Copied!)";
+                    setTimeout(() => document.getElementById('copyHint').innerText = "点击复制结果", 2000);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
