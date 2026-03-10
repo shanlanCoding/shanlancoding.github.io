@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>激活码生成器</title>
+    <title>ESP32 Activation Code Generator</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -80,6 +80,10 @@
             color: #888;
             margin-top: 0.5rem;
             cursor: pointer;
+            user-select: none;
+        }
+        .copy-hint:hover {
+            color: #555;
         }
     </style>
 </head>
@@ -89,12 +93,12 @@
         
         <div class="form-group">
             <label>Machine ID (机器码)</label>
-            <input type="text" id="machineId" name="machineId" placeholder="e.g. A0B1C2D3E4F5" oninput="this.value = this.value.toUpperCase().replace(/[^A-F0-9]/g, '')" maxlength="12">
+            <input type="text" id="machineId" placeholder="e.g. A0B1C2D3E4F5" oninput="this.value = this.value.toUpperCase().replace(/[^A-F0-9]/g, '')" onkeypress="handleKeyPress(event)" maxlength="12">
         </div>
 
         <div class="form-group">
             <label>Secret Salt (加密盐值)</label>
-            <input type="text" id="salt" name="salt" placeholder="">
+            <input type="text" id="salt" value="" onkeypress="handleKeyPress(event)">
         </div>
 
         <button onclick="generate()">生成激活码 (Generate)</button>
@@ -104,6 +108,13 @@
     </div>
 
     <script>
+        // 处理回车键事件
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' || event.keyCode === 13) {
+                generate();
+            }
+        }
+
         async function sha256(message) {
             // encode as UTF-8
             const msgBuffer = new TextEncoder().encode(message);
@@ -147,11 +158,47 @@
         function copyResult() {
             const text = document.getElementById('result').innerText;
             if (text && text !== "Waiting..." && text !== "Error") {
-                navigator.clipboard.writeText(text).then(() => {
-                    document.getElementById('copyHint').innerText = "已复制! (Copied!)";
-                    setTimeout(() => document.getElementById('copyHint').innerText = "点击复制结果", 2000);
-                });
+                // 尝试使用现代 Clipboard API
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(text).then(() => {
+                        showCopySuccess();
+                    }).catch(() => {
+                        // 如果 Clipboard API 失败，使用降级方案
+                        fallbackCopyToClipboard(text);
+                    });
+                } else {
+                    // 不支持 Clipboard API，使用降级方案
+                    fallbackCopyToClipboard(text);
+                }
             }
+        }
+
+        // 降级方案：使用 execCommand
+        function fallbackCopyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                document.execCommand('copy');
+                showCopySuccess();
+            } catch (e) {
+                console.error('Copy failed:', e);
+                alert('复制失败，请手动复制');
+            } finally {
+                document.body.removeChild(textarea);
+            }
+        }
+
+        function showCopySuccess() {
+            const copyHint = document.getElementById('copyHint');
+            const originalText = '点击复制结果';
+            copyHint.innerText = "已复制! (Copied!)";
+            setTimeout(() => {
+                copyHint.innerText = originalText;
+            }, 2000);
         }
     </script>
 </body>
