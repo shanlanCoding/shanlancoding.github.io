@@ -76,14 +76,25 @@
         }
         .copy-hint {
             text-align: center;
-            font-size: 0.8rem;
-            color: #888;
-            margin-top: 0.5rem;
-            cursor: pointer;
+            margin-top: 0.8rem;
             user-select: none;
         }
-        .copy-hint:hover {
-            color: #555;
+        .copy-button {
+            display: inline-block;
+            padding: 0.6rem 1.2rem;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .copy-button:hover {
+            background-color: #218838;
+        }
+        .copy-button:active {
+            background-color: #1e7e34;
         }
     </style>
 </head>
@@ -98,16 +109,32 @@
 
         <div class="form-group">
             <label>加密盐值</label>
-            <input type="text" id="salt" value="" onkeypress="handleKeyPress(event)">
+            <input type="text" id="salt" placeholder="输入加密盐值" onkeypress="handleKeyPress(event)" oninput="saveSalt()">
         </div>
 
         <button onclick="generate()">生成</button>
 
         <div class="result" id="result">Waiting...</div>
-        <div class="copy-hint" id="copyHint" onclick="copyResult()">点击复制结果</div>
+        <div class="copy-hint" id="copyHint">
+            <button class="copy-button" onclick="copyResult()">📋 点击复制结果</button>
+        </div>
     </div>
 
     <script>
+        // 页面加载时恢复 salt 值
+        window.addEventListener('DOMContentLoaded', function() {
+            const savedSalt = localStorage.getItem('activationCodeSalt');
+            if (savedSalt) {
+                document.getElementById('salt').value = savedSalt;
+            }
+        });
+
+        // 保存 salt 到本地存储
+        function saveSalt() {
+            const salt = document.getElementById('salt').value;
+            localStorage.setItem('activationCodeSalt', salt);
+        }
+
         // 处理回车键事件
         function handleKeyPress(event) {
             if (event.key === 'Enter' || event.keyCode === 13) {
@@ -193,11 +220,11 @@
         }
 
         function showCopySuccess() {
-            const copyHint = document.getElementById('copyHint');
-            const originalText = '点击复制结果';
-            copyHint.innerText = "已复制! (Copied!)";
+            const copyButton = document.querySelector('.copy-button');
+            const originalText = '📋 点击复制结果';
+            copyButton.innerText = "✓ 已复制!";
             setTimeout(() => {
-                copyHint.innerText = originalText;
+                copyButton.innerText = originalText;
             }, 2000);
         }
     </script>
