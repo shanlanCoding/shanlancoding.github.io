@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>SGMW-ADAS-CAN 蓝牙控制与 OTA 升级</title>
+<style>
+  :root {
+    --bg: #0b0f14; --panel: #111820; --panel-2: #0e141b; --line: #1d2a36;
+    --txt: #dce6f2; --dim: #7d8fa3; --accent: #00e5c0; --accent-2: #23aaff;
+    --warn: #ffb020; --err: #ff5566; --ok: #22d37f;
+    --mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0; background: var(--bg); color: var(--txt);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  body { min-height: 100vh; padding: 14px; }
+  .wrap { max-width: 1100px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+  
+  .banner-warn {
+    background: rgba(255, 176, 32, 0.12); border: 1px solid var(--warn); border-radius: 12px;
+    padding: 12px 16px; color: #ffd277; font-size: 13px; line-height: 1.5; display: none;
+  }
+  .banner-warn b { color: #fff; }
+
+  header {
+    display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
+    gap: 10px; padding: 14px 16px; background: linear-gradient(180deg, #131c26, #0d141c);
+    border: 1px solid var(--line); border-radius: 14px;
+  }
+  header h1 { margin: 0; font-size: 17px; letter-spacing: .5px; font-weight: 600; }
+  header h1 span { color: var(--accent); }
+  .status { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .dot {
+    width: 9px; height: 9px; border-radius: 50%; background: var(--err); box-shadow: 0 0 8px var(--err);
+    transition: all .25s;
+  }
+  .dot.on { background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+  .dot.wait { background: var(--warn); box-shadow: 0 0 10px var(--warn); }
+  .btn {
+    border: 1px solid var(--line); background: #16212c; color: var(--txt);
+    padding: 9px 14px; border-radius: 10px; font-size: 13px; cursor: pointer;
+    transition: .2s; font-weight: 500; letter-spacing: .3px;
+  }
+  .btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+  .btn:disabled { opacity: .35; cursor: not-allowed; }
+  .btn.primary { background: linear-gradient(180deg, #00e5c0, #0dbfa2); color: #04120f; border: none; font-weight: 700; }
+  .btn.primary:hover:not(:disabled) { filter: brightness(1.08); }
+  .grid { display: grid; gap: 14px; }
+  @media(min-width: 800px) { .grid.main { grid-template-columns: 1.15fr .85fr; } }
+  .card {
+    background: var(--panel); border: 1px solid var(--line); border-radius: 14px;
+    padding: 16px; display: flex; flex-direction: column; gap: 12px;
+  }
+  .card h2 {
+    margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: 1.4px;
+    color: var(--dim); font-weight: 600;
+  }
+  .metrics { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media(min-width: 560px) { .metrics { grid-template-columns: repeat(3, 1fr); } }
+  .metric {
+    background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 12px; display: flex; flex-direction: column; gap: 6px;
+  }
+  .metric .k { font-size: 11px; color: var(--dim); letter-spacing: .4px; }
+  .metric .v { font-family: var(--mono); font-size: 16px; font-weight: 600; color: var(--accent); }
+  .metric .v.dim { color: var(--dim); }
+  .badge { display: inline-block; padding: 2px 9px; border-radius: 6px; font-size: 11px; font-family: var(--mono); font-weight: 600; }
+  .b-ok { background: rgba(34, 211, 127, .16); color: var(--ok); }
+  .b-warn { background: rgba(255, 176, 32, .16); color: var(--warn); }
+  .b-err { background: rgba(255, 85, 102, .16); color: var(--err); }
+  .b-idle { background: rgba(125, 143, 163, .16); color: var(--dim); }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .row .btn { flex: 1; min-width: 130px; }
+  .drop {
+    border: 2px dashed var(--line); border-radius: 12px; padding: 24px 16px;
+    text-align: center; color: var(--dim); cursor: pointer; transition: .2s; font-size: 13px;
+  }
+  .drop:hover, .drop.over { border-color: var(--accent); color: var(--accent); }
+  .drop strong { color: var(--txt); }
+  .prog { height: 12px; background: #0a1017; border-radius: 8px; overflow: hidden; border: 1px solid var(--line); }
+  .prog > i {
+    display: block; height: 100%; width: 0%; background: linear-gradient(90deg, #00e5c0, #23aaff);
+    border-radius: 8px; transition: width .12s linear;
+  }
+  .log {
+    font-family: var(--mono); font-size: 11.5px; color: var(--dim); background: #0a1017;
+    border: 1px solid var(--line); border-radius: 10px; padding: 10px; height: 130px;
+    overflow-y: auto; line-height: 1.55; white-space: pre-wrap; word-break: break-all;
+  }
+  .kv { display: flex; justify-content: space-between; font-size: 12px; color: var(--dim); }
+  .kv b { color: var(--txt); font-family: var(--mono); font-weight: 600; }
+  .hint { font-size: 11.5px; color: var(--dim); line-height: 1.5; }
+  .opt-box { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--dim); cursor: pointer; }
+  .opt-box input { accent-color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- 协议安全提示栏 -->
+  <div class="banner-warn" id="bannerWarn">
+    <b>⚠️ 提示：检测到当前页面以文件模式 (file://) 打开。</b><br>
+    浏览器 W3C 安全规范要求 Web Bluetooth API <b>必须运行在 HTTPS 网址或本地 localhost 环境</b>下。<br>
+    若点击“连接设备”无法弹出蓝牙弹窗，请双击运行同目录下的 <b>【启动网页蓝牙.bat】</b>（访问 http://localhost:8080），或部署至云端 HTTPS 网站即可一键开启！
+  </div>
+
+  <header>
+    <h1>SGMW <span>ADAS / CAN</span> 蓝牙控制与 OTA</h1>
+    <div class="status">
+      <label class="opt-box" title="勾选后，断线或重新打开网页时将自动尝试重连已授权设备">
+        <input type="checkbox" id="chkAutoReconnect" checked> 自动重连
+      </label>
+      <label class="opt-box" title="勾选后将扫描所有蓝牙广播，避免系统过滤器拦截">
+        <input type="checkbox" id="chkAllDevices" checked> 全设备扫描模式
+      </label>
+      <span class="dot" id="connDot"></span>
+      <span id="connText" style="font-size:13px;color:var(--dim)">未连接</span>
+      <button class="btn primary" id="btnConn">连接设备</button>
+      <button class="btn" id="btnDisc" disabled>断开</button>
+    </div>
+  </header>
+
+  <div class="grid main">
+
+    <!-- 遥测 -->
+    <section class="card">
+      <h2>实时系统遥测</h2>
+      <div class="metrics">
+        <div class="metric"><span class="k">CAN 链路状态</span><span class="v dim" id="mCan">—</span></div>
+        <div class="metric"><span class="k">智驾工况模式</span><span class="v dim" id="mDrive">—</span></div>
+        <div class="metric"><span class="k">在环警戒级别</span><span class="v dim" id="mTq">—</span></div>
+        <div class="metric"><span class="k">接管请求标志</span><span class="v dim" id="mReq">—</span></div>
+        <div class="metric"><span class="k">巡航领航状态</span><span class="v dim" id="mSub">—</span></div>
+        <div class="metric"><span class="k">自动在环保持</span><span class="v dim" id="mBind">—</span></div>
+        <div class="metric"><span class="k">累计维护事件</span><span class="v dim" id="mClr">—</span></div>
+        <div class="metric"><span class="k">累计心跳脉冲</span><span class="v dim" id="mPulse">—</span></div>
+        <div class="metric"><span class="k">遥测帧校验</span><span class="v dim" id="mChk">—</span></div>
+      </div>
+      <div class="row">
+        <button class="btn" id="btnToggle" disabled>切换在环保持</button>
+        <button class="btn" id="btnPulse" disabled>单次测试脉冲</button>
+      </div>
+      <div class="log" id="logTel">等待遥测报文…</div>
+    </section>
+
+    <!-- OTA -->
+    <section class="card">
+      <h2>蓝牙固件 OTA</h2>
+      <div class="drop" id="drop">
+        <strong>点击选择</strong> 或将 <strong>.bin</strong> 固件拖入此处
+        <input type="file" id="fileInput" accept=".bin,application/octet-stream" hidden />
+      </div>
+      <div class="kv"><span>固件</span><b id="fwName">—</b></div>
+      <div class="kv"><span>大小</span><b id="fwSize">—</b></div>
+      <div class="kv"><span>单包上限</span><b id="fwChunk">—</b></div>
+      <div class="prog"><i id="progBar"></i></div>
+      <div class="kv"><span>进度</span><b id="progTxt">0%</b></div>
+      <div class="kv"><span>速度</span><b id="progSpd">0 KB/s</b></div>
+      <div class="kv"><span>耗时</span><b id="progTime">0.0 s</b></div>
+      <button class="btn primary" id="btnOta" disabled>开始 BLE OTA 刷写</button>
+      <div class="log" id="logOta">等待连接与固件选择…</div>
+      <div class="hint">
+        • <b>连接小窍门</b>：点击“连接设备”时，如果系统列表未显示，请确认电脑已开启蓝牙，且板子已通电；<br>
+        • <b>刷写效率</b>：基于 512 MTU 高速无应答分包，1MB 固件约 15~20 秒刷写完毕并自动校验重启。
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+/* ====================== 常量与 GATT UUID ====================== */
+const SVC_STR    = "0000fff0-0000-1000-8000-00805f9b34fb";
+const U_TEL      = "0000fff1-0000-1000-8000-00805f9b34fb";
+const U_CTL      = "0000fff2-0000-1000-8000-00805f9b34fb";
+const U_OTA_CMD  = "0000fff3-0000-1000-8000-00805f9b34fb";
+const U_OTA_DATA = "0000fff4-0000-1000-8000-00805f9b34fb";
+
+const MAX_CHUNK   = 496;   // 单包上限 (适配 512 MTU)
+
+/* ====================== DOM 引用 ====================== */
+const $ = (id) => document.getElementById(id);
+const connDot = $("connDot"), connText = $("connText");
+const btnConn = $("btnConn"), btnDisc = $("btnDisc");
+const btnToggle = $("btnToggle"), btnPulse = $("btnPulse");
+const logTel = $("logTel"), logOta = $("logOta");
+const drop = $("drop"), fileInput = $("fileInput");
+const fwName = $("fwName"), fwSize = $("fwSize"), fwChunk = $("fwChunk");
+const progBar = $("progBar"), progTxt = $("progTxt"),
+      progSpd = $("progSpd"), progTime = $("progTime");
+const btnOta = $("btnOta");
+const chkAllDevices = $("chkAllDevices");
+const chkAutoReconnect = $("chkAutoReconnect");
+const bannerWarn = $("bannerWarn");
+
+// 本地持久化配置 Key
+const LS_AUTO_RECONNECT = "sgmw_ble_auto_reconnect";
+const LS_LAST_DEVICE_ID = "sgmw_ble_last_device_id";
+
+// 初始化自动重连复选框
+chkAutoReconnect.checked = localStorage.getItem(LS_AUTO_RECONNECT) !== "0";
+chkAutoReconnect.addEventListener("change", () => {
+  localStorage.setItem(LS_AUTO_RECONNECT, chkAutoReconnect.checked ? "1" : "0");
+  if (!chkAutoReconnect.checked && reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+    setConnStatus("err", "未连接 (自动重连已暂停)");
+    appendLog(logTel, state.logs.tel, "已关闭自动重连");
+  } else if (chkAutoReconnect.checked && !state.connected) {
+    appendLog(logTel, state.logs.tel, "已启用自动重连");
+    if (state.device) scheduleAutoReconnect();
+    else tryAutoConnectOnLoad();
+  }
+});
+
+// 检测运行环境协议
+if (window.location.protocol === "file:") {
+  bannerWarn.style.display = "block";
+}
+
+/* ====================== 运行时状态 ====================== */
+const state = {
+  device: null,
+  server: null,
+  svc: null,
+  telChar: null,
+  ctlChar: null,
+  otaCmd: null,
+  otaData: null,
+  connected: false,
+  chunk: MAX_CHUNK,
+  fwBuffer: null,
+  fwFileName: "",
+  otaInProgress: false,
+  logs: { tel: [], ota: [] }
+};
+
+let userExplicitDisconnect = false;
+let reconnectTimer = null;
+let reconnectAttempts = 0;
+
+/* ====================== 日志与 UI 工具 ====================== */
+function ts(){ return new Date().toLocaleTimeString("zh-CN",{hour12:false}); }
+function appendLog(node, arr, msg){
+  const line = `[${ts()}] ${msg}`;
+  arr.push(line);
+  if (arr.length > 80) arr.shift();
+  node.textContent = arr.join("\n");
+  node.scrollTop = node.scrollHeight;
+}
+function hex(n, w){ return "0x" + n.toString(16).toUpperCase().padStart(w,"0"); }
+
+function setConnStatus(kind, label){
+  connDot.className = "dot";
+  if (kind === "on") connDot.classList.add("on");
+  else if (kind === "wait") connDot.classList.add("wait");
+  connText.textContent = label;
+}
+
+function toggleButtons(enabled){
+  btnToggle.disabled = !enabled;
+  btnPulse.disabled  = !enabled;
+  btnOta.disabled    = !enabled || !state.fwBuffer;
+}
+
+/* ====================== BLE 连接与生命周期 ====================== */
+async function setupGatt(device, isAuto = false){
+  state.device = device;
+  device.removeEventListener("gattserverdisconnected", onDisconnect);
+  device.addEventListener("gattserverdisconnected", onDisconnect);
+
+  setConnStatus("wait", isAuto ? `自动重连中 (${device.name || "SGMW-ADAS-CAN"})…` : "正在建立 GATT 连接…");
+  appendLog(logTel, state.logs.tel, isAuto
+    ? `[自动重连] 正在向 ${device.name || device.id} 发起免密静默握手…`
+    : `已选定设备: ${device.name || device.id}，正在建立 GATT 连接…`);
+
+  const server = await device.gatt.connect();
+  state.server = server;
+
+  setConnStatus("wait", "发现 GATT 服务…");
+  const svc = await server.getPrimaryService(SVC_STR);
+  state.svc = svc;
+
+  state.telChar = await svc.getCharacteristic(U_TEL);
+  state.ctlChar = await svc.getCharacteristic(U_CTL);
+  state.otaCmd  = await svc.getCharacteristic(U_OTA_CMD);
+  state.otaData = await svc.getCharacteristic(U_OTA_DATA);
+
+  // 订阅遥测通知
+  await state.telChar.startNotifications();
+  state.telChar.addEventListener("characteristicvaluechanged", onTelemetry);
+
+  // 订阅 OTA 指令回复
+  try{
+    await state.otaCmd.startNotifications();
+    state.otaCmd.addEventListener("characteristicvaluechanged", onOtaCmdReply);
+  }catch(e){
+    appendLog(logOta, state.logs.ota, "OTA CMD Notify 订阅: " + e.message);
+  }
+
+  // 持久化记录最后成功连接的设备 ID，后续刷新或重开网页可秒连
+  if (device.id) {
+    localStorage.setItem(LS_LAST_DEVICE_ID, device.id);
+  }
+
+  state.chunk = MAX_CHUNK;
+  fwChunk.textContent = state.chunk + " B";
+  state.connected = true;
+  userExplicitDisconnect = false;
+  reconnectAttempts = 0;
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
+
+  setConnStatus("on", "已连接 " + (device.name || "SGMW-ADAS-CAN"));
+  btnConn.disabled = true;
+  btnDisc.disabled = false;
+  toggleButtons(true);
+
+  appendLog(logTel, state.logs.tel, (isAuto ? "✔ 自动重连成功！" : "✔ 蓝牙连接成功！") + " GATT 通道已就绪");
+  appendLog(logOta, state.logs.ota, "BLE OTA 通道就绪，准备接收固件");
+}
+
+/* 手动点击连接 */
+async function connect(){
+  if (!navigator.bluetooth) {
+    alert("当前浏览器环境未启用 Web Bluetooth API！\n\n原因：Web Bluetooth 必须在安全上下文（HTTPS 或 localhost）中运行。\n\n解决办法：\n1. 双击运行本地目录下的【启动网页蓝牙.bat】（访问 http://localhost:8080）；\n2. 或部署至云端已配置 SSL 证书的 HTTPS 网站中。");
+    return;
+  }
+
+  userExplicitDisconnect = false;
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
+
+  setConnStatus("wait", "正在扫描设备…");
+  try{
+    let scanOptions = {
+      optionalServices: [SVC_STR]
+    };
+
+    if (chkAllDevices.checked) {
+      scanOptions.acceptAllDevices = true;
+    } else {
+      scanOptions.filters = [
+        { name: "SGMW-ADAS-CAN" },
+        { namePrefix: "SGMW" },
+        { services: [SVC_STR] }
+      ];
+    }
+
+    appendLog(logTel, state.logs.tel, "发起蓝牙扫描 (" + (chkAllDevices.checked ? "全设备模式" : "过滤 SGMW-ADAS-CAN") + ")…");
+    const device = await navigator.bluetooth.requestDevice(scanOptions);
+    await setupGatt(device, false);
+  }catch(err){
+    console.error(err);
+    if (err.name !== "AbortError") {
+      setConnStatus("err", "未连接");
+      appendLog(logTel, state.logs.tel, "连接未完成: " + err.message);
+    } else {
+      setConnStatus("err", "未连接");
+      appendLog(logTel, state.logs.tel, "已取消设备选择");
+    }
+    btnConn.disabled = false;
+    btnDisc.disabled = true;
+  }
+}
+
+/* 掉线监听与自动重连调度 */
+function onDisconnect(){
+  state.connected = false;
+  state.server = null;
+  state.telChar = state.ctlChar = state.otaCmd = state.otaData = null;
+  state.otaInProgress = false;
+  btnConn.disabled = false;
+  btnDisc.disabled = true;
+  toggleButtons(false);
+
+  // 用户主动点击断开，或关闭了自动重连开关
+  if (userExplicitDisconnect || !chkAutoReconnect.checked) {
+    setConnStatus("err", "蓝牙已断开");
+    appendLog(logTel, state.logs.tel, "GATT 连接已断开（自动重连已暂停）");
+    return;
+  }
+
+  setConnStatus("wait", "连接已断开，准备自动重连…");
+  appendLog(logTel, state.logs.tel, "⚠️ 检测到蓝牙连接断开，即将启动自动重连…");
+  scheduleAutoReconnect();
+}
+
+function scheduleAutoReconnect(){
+  if (reconnectTimer) return;
+  const interval = Math.min(2000 + reconnectAttempts * 500, 6000);
+  reconnectTimer = setTimeout(async () => {
+    reconnectTimer = null;
+    if (userExplicitDisconnect || !chkAutoReconnect.checked || state.connected) return;
+
+    reconnectAttempts++;
+    setConnStatus("wait", `自动重连中 (第 ${reconnectAttempts} 次)…`);
+    appendLog(logTel, state.logs.tel, `[自动重连] 尝试第 ${reconnectAttempts} 次恢复 GATT 连接…`);
+
+    try {
+      if (state.device) {
+        await setupGatt(state.device, true);
+      } else {
+        await tryAutoConnectOnLoad();
+      }
+    } catch (e) {
+      console.warn("Auto reconnect attempt failed:", e.message);
+      if (!userExplicitDisconnect && chkAutoReconnect.checked) {
+        scheduleAutoReconnect();
+      }
+    }
+  }, interval);
+}
+
+/* 手动断开 */
+async function disconnect(){
+  userExplicitDisconnect = true;
+  if (reconnectTimer) {
+    clearTimeout(reconnectTimer);
+    reconnectTimer = null;
+  }
+  if (state.device && state.device.gatt && state.device.gatt.connected) {
+    state.device.gatt.disconnect();
+  }
+  setConnStatus("err", "已主动断开");
+  appendLog(logTel, state.logs.tel, "用户主动断开连接，已暂停自动重连");
+}
+
+/* 页面加载时自动连接已授权设备 (W3C getDevices 规范) */
+async function tryAutoConnectOnLoad(){
+  if (!navigator.bluetooth || typeof navigator.bluetooth.getDevices !== "function") {
+    appendLog(logTel, state.logs.tel, "提示：当前浏览器暂未开放 getDevices() 权限，初次使用请点击【连接设备】。");
+    return;
+  }
+  if (!chkAutoReconnect.checked) return;
+
+  try {
+    const devices = await navigator.bluetooth.getDevices();
+    if (!devices || devices.length === 0) {
+      appendLog(logTel, state.logs.tel, "提示：尚未授权过设备。首次请点击【连接设备】授权，授权后每次打开或掉线都将全自动秒连！");
+      return;
+    }
+
+    const lastId = localStorage.getItem(LS_LAST_DEVICE_ID);
+    // 优先匹配最后记录的设备 ID，其次匹配名称含 SGMW，最后选首个已授权设备
+    const target = devices.find(d => d.id === lastId) ||
+                   devices.find(d => (d.name && d.name.includes("SGMW"))) ||
+                   devices[0];
+
+    if (target) {
+      setConnStatus("wait", "检测到已授权设备，正在自动免密秒连…");
+      appendLog(logTel, state.logs.tel, `[自动连接] 发现已授权设备 [${target.name || target.id}]，正在建立连接…`);
+      await setupGatt(target, true);
+    }
+  } catch (err) {
+    console.warn("Auto connect on load failed:", err);
+    appendLog(logTel, state.logs.tel, "自动免密连接提示: " + err.message);
+  }
+}
+
+btnConn.addEventListener("click", connect);
+btnDisc.addEventListener("click", disconnect);
+
+/* ====================== 遥测解析 ====================== */
+const DRIVE_MAP = { 0x00: "P/N 待机", 0x08: "D 档人工", 0x18: "ADAS 激活" };
+const SUB_MAP   = { 0x91: "ACC 巡航", 0x92: "Pilot 领航", 0x93: "Co-pilot", 0x50: "域控待命" };
+
+function onTelemetry(ev){
+  const dv = ev.target.value;
+  if (dv.byteLength < 16) return;
+  const u = new Uint8Array(dv.buffer, dv.byteOffset, dv.byteLength);
+
+  if (u[0] !== 0xAA) return;
+  let sum = 0;
+  for (let i = 0; i < 15; i++) sum = (sum + u[i]) & 0xFF;
+  const chkOk = (sum === u[15]);
+
+  const canOk = u[1] === 1;
+  const drv = u[2];
+  const tq  = u[3];
+  const req = u[4];
+  const sub = u[5];
+  const bind = u[6];
+  const clrCount = dv.getUint32(7, true);
+  const pulseCount = dv.getUint32(11, true);
+
+  $("mCan").innerHTML = canOk
+    ? '<span class="badge b-ok">OK</span>'
+    : '<span class="badge b-err">FAULT</span>';
+
+  $("mDrive").innerHTML = `<span class="badge ${drv===0x18?'b-ok':'b-idle'}">${DRIVE_MAP[drv] ?? "待机"}</span>`;
+  $("mTq").textContent = "L" + tq + (tq>0 ? " ⚠" : "");
+  $("mTq").style.color = tq>0 ? "var(--warn)" : "var(--accent)";
+  $("mReq").innerHTML = req
+    ? '<span class="badge b-err">TAKE OVER</span>'
+    : '<span class="badge b-ok">NO</span>';
+  $("mSub").innerHTML = `<span class="badge b-idle">${SUB_MAP[sub] ?? "—"}</span>`;
+  $("mBind").innerHTML = bind
+    ? '<span class="badge b-ok">ON</span>'
+    : '<span class="badge b-idle">OFF</span>';
+  $("mClr").textContent = clrCount;
+  $("mPulse").textContent = pulseCount;
+  $("mChk").innerHTML = chkOk
+    ? '<span class="badge b-ok">VALID</span>'
+    : '<span class="badge b-err">INVALID</span>';
+
+  const stamp = `链路:${canOk?"正常":"异常"} | 工况:${DRIVE_MAP[drv]||"待机"} | 在环警戒:L${tq} | 接管:${req?"触发":"无"} | 保持使能:${bind?"开":"关"} | 维护事件:${clrCount} | 心跳:${pulseCount}`;
+  if (stamp !== state._lastTelLine){
+    state._lastTelLine = stamp;
+    appendLog(logTel, state.logs.tel, stamp);
+  }
+}
+
+/* ====================== 控制 ====================== */
+async function sendControl(byte){
+  if (!state.connected || !state.ctlChar) return;
+  try{
+    await state.ctlChar.writeValue(new Uint8Array([byte]));
+    const desc = byte === 0x01 ? "切换在环保持" : (byte === 0x02 ? "单次测试脉冲" : "控制指令");
+    appendLog(logTel, state.logs.tel, `已下发: [${desc}]`);
+  }catch(e){
+    appendLog(logTel, state.logs.tel, "控制指令失败: " + e.message);
+  }
+}
+
+btnToggle.addEventListener("click", () => sendControl(0x01));
+btnPulse.addEventListener("click",  () => sendControl(0x02));
+
+/* ====================== 固件文件选择 ====================== */
+async function loadFirmware(file){
+  if (!file) return;
+  const buf = new Uint8Array(await file.arrayBuffer());
+  state.fwBuffer = buf;
+  state.fwFileName = file.name;
+  fwName.textContent = file.name;
+  fwSize.textContent = (buf.length / 1024).toFixed(1) + " KB (" + buf.length + " 字节)";
+  fwChunk.textContent = state.chunk + " B";
+  resetProgress();
+  btnOta.disabled = !(state.connected && !state.otaInProgress);
+  appendLog(logOta, state.logs.ota, "已加载固件: " + file.name + " (" + buf.length + " B)");
+}
+
+function resetProgress(){
+  progBar.style.width = "0%";
+  progTxt.textContent = "0%";
+  progSpd.textContent = "0 KB/s";
+  progTime.textContent = "0.0 s";
+}
+
+drop.addEventListener("click", () => fileInput.click());
+fileInput.addEventListener("change", (e) => loadFirmware(e.target.files[0]));
+drop.addEventListener("dragover", (e) => { e.preventDefault(); drop.classList.add("over"); });
+drop.addEventListener("dragleave", () => drop.classList.remove("over"));
+drop.addEventListener("drop", (e) => {
+  e.preventDefault(); drop.classList.remove("over");
+  if (e.dataTransfer.files.length) loadFirmware(e.dataTransfer.files[0]);
+});
+
+/* ====================== OTA 流程 ====================== */
+let otaResolver = null;
+let otaRejecter = null;
+
+function onOtaCmdReply(ev){
+  const dv = ev.target.value;
+  if (dv.byteLength < 2) return;
+  const u = new Uint8Array(dv.buffer, dv.byteOffset, dv.byteLength);
+  const cmd = u[0], err = u[1];
+  appendLog(logOta, state.logs.ota, `板端响应: [${hex(cmd,2)}, ${hex(err,2)}]`);
+  if (cmd === 0x01 && otaResolver) {
+    if (err === 0x00) { otaResolver("begin-ok"); }
+    else { otaRejecter(new Error("板端拒绝启动 OTA，错误码=" + hex(err,2))); }
+    otaResolver = otaRejecter = null;
+  } else if (cmd === 0x02) {
+    if (err === 0x00) appendLog(logOta, state.logs.ota, "✔ 固件校验 100% 成功，ESP32-C3 正在重启…");
+    else appendLog(logOta, state.logs.ota, "✖ 固件校验失败，错误码=" + hex(err,2));
+  }
+}
+
+function waitForOtaBegin(timeoutMs = 5000){
+  return new Promise((resolve, reject) => {
+    otaResolver = resolve;
+    otaRejecter = reject;
+    setTimeout(() => {
+      if (otaResolver || otaRejecter){
+        otaResolver = otaRejecter = null;
+        reject(new Error("等待板端 OTA 就绪超时"));
+      }
+    }, timeoutMs);
+  });
+}
+
+async function runOta(){
+  if (!state.connected || !state.fwBuffer || state.otaInProgress) return;
+
+  const data = state.fwBuffer;
+  const total = data.length;
+  const chunkSize = state.chunk;
+  const totalChunks = Math.ceil(total / chunkSize);
+
+  state.otaInProgress = true;
+  btnOta.disabled = true;
+  resetProgress();
+
+  try{
+    // 1) 发送 OTA 开始指令，携带 4 字节总长度
+    const startPkt = new Uint8Array([
+      0x01,
+      total & 0xFF, (total >>> 8) & 0xFF, (total >>> 16) & 0xFF, (total >>> 24) & 0xFF
+    ]);
+    appendLog(logOta, state.logs.ota, `发起 OTA 握手: 固件大小 ${total} 字节，分包 ${chunkSize} B × ${totalChunks} 包`);
+    await state.otaCmd.writeValue(startPkt);
+    await waitForOtaBegin(5000);
+
+    // 2) 高速分包写入
+    const t0 = performance.now();
+    let sent = 0;
+    let lastUi = 0;
+
+    for (let i = 0; i < totalChunks; i++){
+      const off = i * chunkSize;
+      const end = Math.min(off + chunkSize, total);
+      const slice = data.subarray(off, end);
+
+      await state.otaData.writeValueWithoutResponse(slice);
+      sent += slice.length;
+
+      const now = performance.now();
+      if (now - lastUi > 80 || i === totalChunks - 1){
+        const elapsed = (now - t0) / 1000;
+        const pct = (sent / total * 100);
+        const speed = elapsed > 0 ? (sent / 1024 / elapsed) : 0;
+        progBar.style.width = pct.toFixed(1) + "%";
+        progTxt.textContent = pct.toFixed(1) + "%";
+        progSpd.textContent = speed.toFixed(1) + " KB/s";
+        progTime.textContent = elapsed.toFixed(1) + " s";
+        lastUi = now;
+      }
+
+      if ((i & 0x3F) === 0) await new Promise(r => setTimeout(r, 0));
+    }
+
+    // 3) 发送结束指令并请求校验
+    appendLog(logOta, state.logs.ota, "数据传输完成，正在校验固件并提交系统分区…");
+    await state.otaCmd.writeValue(new Uint8Array([0x02]));
+
+    const t1 = performance.now();
+    const elapsed = (t1 - t0) / 1000;
+    const speed = sent / 1024 / elapsed;
+    progBar.style.width = "100%";
+    progTxt.textContent = "100%";
+    progSpd.textContent = speed.toFixed(1) + " KB/s";
+    progTime.textContent = elapsed.toFixed(1) + " s";
+    appendLog(logOta, state.logs.ota, `✔ 蓝牙 OTA 完成！总计传输 ${sent} 字节，耗时 ${elapsed.toFixed(1)} 秒 (平均 ${speed.toFixed(1)} KB/s)`);
+  }catch(err){
+    console.error(err);
+    appendLog(logOta, state.logs.ota, "✖ OTA 失败: " + err.message);
+  }finally{
+    state.otaInProgress = false;
+    btnOta.disabled = !(state.connected && state.fwBuffer);
+  }
+}
+
+btnOta.addEventListener("click", runOta);
+
+setConnStatus("err", "未连接");
+toggleButtons(false);
+
+// 页面加载就绪后，自动尝试连接已授权过的设备 (W3C getDevices)
+window.addEventListener("DOMContentLoaded", () => {
+  setTimeout(tryAutoConnectOnLoad, 400);
+});
+</script>
+</body>
+</html>
