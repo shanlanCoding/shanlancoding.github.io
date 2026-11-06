@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>蓝牙自动连接 · 手机端能力自检</title>
+<style>
+  :root {
+    --bg:#0b0f14; --panel:#111820; --panel-2:#0e141b; --line:#1d2a36;
+    --txt:#dce6f2; --dim:#7d8fa3; --accent:#00e5c0; --accent-2:#23aaff;
+    --warn:#ffb020; --err:#ff5566; --ok:#22d37f;
+    --mono:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:var(--bg);color:var(--txt);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"PingFang SC","Microsoft YaHei",sans-serif}
+  body{padding:14px;min-height:100vh}
+  .wrap{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+  header{padding:14px 16px;background:linear-gradient(180deg,#131c26,#0d141c);
+    border:1px solid var(--line);border-radius:14px}
+  header h1{margin:0 0 4px;font-size:16px;font-weight:600;letter-spacing:.3px}
+  header .sub{font-size:12px;color:var(--dim)}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+    padding:14px 16px;display:flex;flex-direction:column;gap:10px}
+  .card h2{margin:0;font-size:12px;text-transform:uppercase;letter-spacing:1.2px;color:var(--dim);font-weight:600}
+  .verdict{font-size:15px;font-weight:700;line-height:1.4}
+  .verdict.ok{color:var(--ok)} .verdict.warn{color:var(--warn)} .verdict.err{color:var(--err)}
+  .advice{font-size:12.5px;color:var(--dim);line-height:1.6}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  td{padding:7px 0;border-bottom:1px dashed #1a2530;vertical-align:top}
+  tr:last-child td{border-bottom:none}
+  td.k{color:var(--dim);width:44%}
+  td.v{font-family:var(--mono);word-break:break-all;text-align:right}
+  .badge{display:inline-block;padding:1px 8px;border-radius:6px;font-size:11px;font-family:var(--mono);font-weight:600}
+  .b-ok{background:rgba(34,211,127,.16);color:var(--ok)}
+  .b-warn{background:rgba(255,176,32,.16);color:var(--warn)}
+  .b-err{background:rgba(255,85,102,.16);color:var(--err)}
+  .b-idle{background:rgba(125,143,163,.16);color:var(--dim)}
+  .row{display:flex;gap:9px;flex-wrap:wrap}
+  .btn{flex:1;min-width:132px;border:1px solid var(--line);background:#16212c;color:var(--txt);
+    padding:11px 12px;border-radius:10px;font-size:13px;cursor:pointer;transition:.2s;font-weight:500}
+  .btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+  .btn:disabled{opacity:.35;cursor:not-allowed}
+  .btn.primary{background:linear-gradient(180deg,#00e5c0,#0dbfa2);color:#04120f;border:none;font-weight:700}
+  .log{font-family:var(--mono);font-size:11.5px;color:var(--dim);background:#0a1017;
+    border:1px solid var(--line);border-radius:10px;padding:10px;height:170px;overflow-y:auto;
+    line-height:1.55;white-space:pre-wrap;word-break:break-all}
+  .hint{font-size:11.5px;color:var(--dim);line-height:1.65}
+  ol,ul{margin:0;padding-left:18px;font-size:12.5px;color:var(--dim);line-height:1.85}
+  code{font-family:var(--mono);background:#0a1017;border:1px solid var(--line);
+    border-radius:5px;padding:1px 6px;color:var(--accent);font-size:11.5px;word-break:break-all}
+  a{color:var(--accent-2)}
+  .dev{background:var(--panel-2);border:1px solid var(--line);border-radius:9px;padding:9px 11px;
+    font-size:12px;font-family:var(--mono);line-height:1.7;margin-bottom:7px}
+  .dev b{color:var(--accent);font-family:inherit}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>SGMW 蓝牙自动连接 · 手机端能力自检</h1>
+    <div class="sub">判定当前浏览器是否开放 <code>getDevices()</code> 静默重连能力（零点击自动配对的前提）</div>
+  </header>
+
+  <section class="card">
+    <div class="verdict" id="verdict">正在检测…</div>
+    <div class="advice" id="advice"></div>
+  </section>
+
+  <section class="card">
+    <h2>运行环境</h2>
+    <table id="envTable"></table>
+  </section>
+
+  <section class="card">
+    <h2>Web Bluetooth 能力矩阵</h2>
+    <table id="capTable"></table>
+  </section>
+
+  <section class="card">
+    <h2>已授权设备列表（getDevices 读取）</h2>
+    <div id="devList">—</div>
+    <div class="hint" id="devHint"></div>
+  </section>
+
+  <section class="card">
+    <h2>验证操作</h2>
+    <div class="row">
+      <button class="btn" id="btnRescan">重新检测</button>
+      <button class="btn primary" id="btnGrant">① 授权并连接一台设备</button>
+    </div>
+    <div class="row">
+      <button class="btn" id="btnSilent">② 静默重连测试（零点击）</button>
+      <button class="btn" id="btnClear">清空本地记录</button>
+    </div>
+    <div class="row">
+      <button class="btn" id="btnCopy">复制诊断报告</button>
+    </div>
+    <div class="hint">
+      <b>判定流程：</b>先点 ① 授权一次（会弹浏览器设备选择框，属正常）→ 然后<b>刷新本页</b> →
+      再点 ② 或直接看页面顶部结论。若刷新后能<b>不经任何点选</b>自动列出设备并连上，说明 flags 已生效，
+      主控制台页面即可实现「打开即连、零点击」。
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>一次性前置设置（每台手机做一次）</h2>
+    <ol>
+      <li><b>Edge 安卓版</b>：地址栏输入 <code>edge://flags</code>；<b>Chrome 安卓版</b>：输入 <code>chrome://flags</code>。</li>
+      <li>搜索并开启 <code>#enable-experimental-web-platform-features</code>（实验性 Web 平台特性）→ 设为 <b>Enabled</b>。</li>
+      <li>搜索并开启 <code>#enable-web-bluetooth-new-permissions-backend</code>（新版蓝牙权限后端，<b>决定关机重启后授权是否保留</b>）→ 设为 <b>Enabled</b>。</li>
+      <li>点底部 <b>Relaunch / 重新启动</b> 按钮，浏览器重启。</li>
+      <li>用<b>同一个网址</b>（同一域名、同一端口）重新打开本页，点【重新检测】看结论是否变为绿色。</li>
+    </ol>
+    <div class="hint">
+      ⚠️ 注意：设备授权是<b>按网址（Origin）隔离</b>的。域名、端口、协议任一项变化，都需要重新授权一次。<br>
+      ⚠️ 若 <code>edge://flags</code> 打不开或开关不存在，说明该版本被厂商/组策略锁定，此路不通，需改用原生 App 外壳或 Wi-Fi 通道方案。
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>运行日志</h2>
+    <div class="log" id="log">等待检测…</div>
+  </section>
+
+</div>
+
+<script>
+"use strict";
+
+/* ====================== 常量（与主控制台页面保持一致） ====================== */
+const SVC_STR    = "0000fff0-0000-1000-8000-00805f9b34fb";
+const U_TEL      = "0000fff1-0000-1000-8000-00805f9b34fb";
+const LS_LAST_DEVICE_ID = "sgmw_ble_last_device_id";
+const PROBE_VER  = "1.0.0";
+
+/* ====================== 工具 ====================== */
+const $ = (id) => document.getElementById(id);
+const logEl = $("log");
+const logs = [];
+
+function ts(){ return new Date().toLocaleTimeString("zh-CN", { hour12:false }); }
+function log(msg){
+  logs.push(`[${ts()}] ${msg}`);
+  if (logs.length > 200) logs.shift();
+  logEl.textContent = logs.join("\n");
+  logEl.scrollTop = logEl.scrollHeight;
+}
+function badge(ok, txtOk, txtNo, kind){
+  const cls = ok ? "b-ok" : (kind === "warn" ? "b-warn" : "b-err");
+  return `<span class="badge ${cls}">${ok ? txtOk : txtNo}</span>`;
+}
+function row(k, vHtml){
+  return `<tr><td class="k">${k}</td><td class="v">${vHtml}</td></tr>`;
+}
+
+/* ====================== 能力探测 ====================== */
+function uaSummary(){
+  const ua = navigator.userAgent || "";
+  let name = "未知浏览器";
+  if (/EdgA\//.test(ua)) {
+    name = "Edge Android " + (ua.match(/EdgA\/([\d.]+)/) || [])[1];
+  } else if (/SamsungBrowser\//.test(ua)) {
+    name = "Samsung Internet " + (ua.match(/SamsungBrowser\/([\d.]+)/) || [])[1];
+  } else if (/OPR\/|Opera/.test(ua)) {
+    name = "Opera " + ((ua.match(/OPR\/([\d.]+)/) || [])[1] || "");
+  } else if (/Chrome\//.test(ua)) {
+    name = "Chrome " + (ua.match(/Chrome\/([\d.]+)/) || [])[1];
+  }
+  const android = (ua.match(/Android\s([\d.]+)/) || [])[1] || "—";
+  const mobile = /Mobile/.test(ua) ? "手机" : "桌面";
+  return { name, android, mobile, ua };
+}
+
+function detectCaps(){
+  const bt = navigator.bluetooth;
+  const caps = {
+    secure: window.isSecureContext === true,
+    protocol: location.protocol.replace(":", ""),
+    hasApi: !!bt,
+    hasRequestDevice: !!(bt && typeof bt.requestDevice === "function"),
+    hasGetDevices: !!(bt && typeof bt.getDevices === "function"),
+    hasGetAvailability: !!(bt && typeof bt.getAvailability === "function"),
+    hasWatchAdv: !!(window.BluetoothDevice && "watchAdvertisements" in BluetoothDevice.prototype),
+    hasPermissions: !!(navigator.permissions && typeof navigator.permissions.query === "function"),
+    lastId: localStorage.getItem(LS_LAST_DEVICE_ID) || ""
+  };
+  return caps;
+}
+
+/* ====================== 渲染 ====================== */
+function renderEnv(caps, ua){
+  const url = location.href.length > 68 ? location.href.slice(0, 68) + "…" : location.href;
+  $("envTable").innerHTML =
+    row("页面网址", url) +
+    row("协议", `${caps.protocol} ${caps.secure ? badge(true,"安全上下文","非安全上下文") : badge(false,"","非安全上下文")}`) +
+    row("浏览器", ua.name + "（" + ua.mobile + "）") +
+    row("Android 版本", ua.android) +
+    row("自检页版本", PROBE_VER) +
+    row("本地记录设备 ID", caps.lastId ? `<b>${caps.lastId}</b>` : "（空）");
+}
+
+function renderCaps(caps){
+  $("capTable").innerHTML =
+    row("navigator.bluetooth", badge(caps.hasApi, "存在", "缺失")) +
+    row("requestDevice()<br><span style='font-size:11px'>手动选设备（有弹窗）</span>", badge(caps.hasRequestDevice, "可用", "不可用")) +
+    row("getDevices()<br><span style='font-size:11px'>读取已授权设备（零点击关键）</span>", badge(caps.hasGetDevices, "可用", "不可用", "warn")) +
+    row("watchAdvertisements()<br><span style='font-size:11px'>等待广播出现再建链</span>", badge(caps.hasWatchAdv, "可用", "不可用", "warn")) +
+    row("getAvailability()", badge(caps.hasGetAvailability, "可用", "不可用", "warn")) +
+    row("Permissions API", badge(caps.hasPermissions, "可用", "不可用", "warn"));
+}
+
+function renderVerdict(caps, deviceCount){
+  const v = $("verdict"), a = $("advice");
+  v.className = "verdict";
+  if (!caps.hasApi){
+    v.classList.add("err");
+    v.textContent = "✖ 当前环境没有 Web Bluetooth API";
+    a.innerHTML = "该页面不是通过 HTTPS 打开，或浏览器内核不支持。请确认网址为 <code>https://</code> 开头。";
+    return;
+  }
+  if (!caps.hasGetDevices){
+    v.classList.add("warn");
+    v.textContent = "⚠ 未开放 getDevices() → 目前只能每次手动点选设备";
+    a.innerHTML = "这正是你遇到的问题。请按下方【一次性前置设置】开启两个 flags 并重启浏览器，然后重新检测。";
+    return;
+  }
+  if (deviceCount === 0){
+    v.classList.add("warn");
+    v.textContent = "◐ getDevices() 已开放，但授权列表为空";
+    a.innerHTML = "说明页面已具备零点击能力，只差一次授权。请点 ① 授权一次，然后刷新本页再检测。";
+    return;
+  }
+  v.classList.add("ok");
+  v.textContent = "✔ getDevices() 已开放，且已读到 " + deviceCount + " 台授权设备 → 可零点击自动连接";
+  a.innerHTML = "能力已具备。刷新本页后点 ② 静默重连测试，若无弹窗即可连上，主控制台页面打开后就会自动连接。";
+}
+
+async function renderDevices(caps){
+  const box = $("devList"), hint = $("devHint");
+  if (!caps.hasGetDevices){
+    box.innerHTML = '<span class="badge b-idle">不可用</span>';
+    hint.textContent = "当前浏览器未开放 getDevices()，无法读取已授权设备列表。";
+    return 0;
+  }
+  let devices = [];
+  try {
+    // 蓝牙适配器未就绪时 getDevices() 可能长时间不兑现，必须加超时保护
+    devices = await Promise.race([
+      navigator.bluetooth.getDevices(),
+      new Promise((_, rej) => setTimeout(() => rej(new Error("getDevices() 超时：蓝牙适配器未就绪或系统蓝牙已关闭")), 3000))
+    ]);
+  } catch (e) {
+    const isTimeout = /超时/.test(e.message || "");
+    box.innerHTML = `<span class="badge ${isTimeout ? "b-warn" : "b-err"}">${isTimeout ? "读取超时" : "读取失败"}</span>`;
+    hint.textContent = "getDevices() 调用异常：" + e.name + " - " + e.message;
+    log("getDevices() 异常: " + e.name + " " + e.message);
+    return 0;
+  }
+  if (!devices || devices.length === 0){
+    box.innerHTML = '<span class="badge b-idle">授权列表为空</span>';
+    hint.textContent = "尚未在本网址授权过任何设备（或授权未持久化，需开启新版蓝牙权限后端 flag）。";
+    return 0;
+  }
+  box.innerHTML = devices.map((d, i) =>
+    `<div class="dev"><b>#${i + 1}</b> ${d.name || "（无名称）"}<br>ID: ${d.id || "—"}${
+      caps.lastId && d.id === caps.lastId ? ' <span class="badge b-ok">上次连接</span>' : ""}</div>`
+  ).join("");
+  hint.textContent = "共 " + devices.length + " 台。授权按网址隔离，换域名需重新授权。";
+  return devices.length;
+}
+
+/* ====================== 建链（与主控制台同协议） ====================== */
+async function connectAndVerify(device, isAuto){
+  const t0 = performance.now();
+  log((isAuto ? "[静默重连] " : "[手动授权] ") + "正在建立 GATT 连接 → " + (device.name || device.id));
+  const server = await device.gatt.connect();
+  const svc = await server.getPrimaryService(SVC_STR);
+  const tel = await svc.getCharacteristic(U_TEL);
+  await tel.startNotifications();
+
+  const gotFrame = await new Promise((resolve) => {
+    const timer = setTimeout(() => { tel.removeEventListener("characteristicvaluechanged", h); resolve(false); }, 3000);
+    function h(ev){
+      const dv = ev.target.value;
+      if (dv.byteLength >= 16 && new Uint8Array(dv.buffer, dv.byteOffset, 1)[0] === 0xAA){
+        clearTimeout(timer);
+        tel.removeEventListener("characteristicvaluechanged", h);
+        resolve(true);
+      }
+    }
+    tel.addEventListener("characteristicvaluechanged", h);
+  });
+
+  const ms = (performance.now() - t0).toFixed(0);
+  localStorage.setItem(LS_LAST_DEVICE_ID, device.id || "");
+  log("✔ GATT 已就绪（耗时 " + ms + " ms），遥测帧" + (gotFrame ? "已收到" : "3 秒内未收到（板子可能未上电或 CAN 未就绪）"));
+  return { ok: true, ms, gotFrame };
+}
+
+/* 静默重连：复刻主页面的零点击链路 */
+async function silentReconnect(){
+  const caps = detectCaps();
+  if (!caps.hasGetDevices){
+    log("✖ 静默重连不可用：getDevices() 缺失，请先开启 flags");
+    alert("当前浏览器未开放 getDevices()，无法零点击重连。\n\n请先按页面下方【一次性前置设置】开启两个 flags 并重启浏览器。");
+    return;
+  }
+  let devices = [];
+  try { devices = await navigator.bluetooth.getDevices(); }
+  catch (e) { log("✖ getDevices 异常: " + e.message); return; }
+
+  if (!devices.length){
+    log("✖ 授权列表为空：请先点 ① 授权一次");
+    alert("授权列表为空。请先点【① 授权并连接一台设备】完成首次授权，然后刷新本页再测。");
+    return;
+  }
+  const target = devices.find(d => d.id === caps.lastId)
+              || devices.find(d => (d.name || "").includes("SGMW"))
+              || devices[0];
+  log("[静默重连] 选中设备: " + (target.name || target.id));
+
+  // 若支持 watchAdvertisements，先等广播出现（最多 6s）
+  if (target.watchAdvertisements){
+    log("[静默重连] 等待广播包出现（最多 6 秒）…");
+    try {
+      const ctrl = new AbortController();
+      await new Promise((resolve, reject) => {
+        const timer = setTimeout(() => { try{ ctrl.abort(); }catch(_){} reject(new Error("等待广播超时")); }, 6000);
+        target.addEventListener("advertisementreceived", function h(){
+          clearTimeout(timer); target.removeEventListener("advertisementreceived", h);
+          try{ ctrl.abort(); }catch(_){}
+          resolve();
+        }, { signal: ctrl.signal });
+        target.watchAdvertisements({ signal: ctrl.signal }).catch((e) => { clearTimeout(timer); reject(e); });
+      });
+      log("[静默重连] 已捕获广播包");
+    } catch (e) {
+      log("[静默重连] 等待广播未成功（" + e.message + "），直接尝试建链…");
+    }
+  }
+
+  const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("建链超时 10s")), 10000));
+  try {
+    await Promise.race([connectAndVerify(target, true), timeout]);
+    log("✔✔ 零点击静默重连成功 —— 主控制台页面即可实现打开即连");
+  } catch (e) {
+    log("✖ 静默重连失败: " + e.message);
+    if (target.gatt && target.gatt.connected) { try { target.gatt.disconnect(); } catch(_){} }
+  }
+}
+
+/* ====================== 授权 ====================== */
+async function grantOnce(){
+  const caps = detectCaps();
+  if (!caps.hasApi){ alert("当前环境没有 Web Bluetooth，请确认以 https:// 方式打开。"); return; }
+  try {
+    log("[手动授权] 拉起设备选择框…");
+    const device = await navigator.bluetooth.requestDevice({
+      acceptAllDevices: true,
+      optionalServices: [SVC_STR]
+    });
+    await connectAndVerify(device, false);
+    await refresh();
+  } catch (e) {
+    if (e.name === "AbortError") log("[手动授权] 用户取消了选择");
+    else log("[手动授权] 失败: " + e.name + " " + e.message);
+  }
+}
+
+/* ====================== 刷新 & 报告 ====================== */
+async function refresh(){
+  const ua = uaSummary();
+  const caps = detectCaps();
+  renderEnv(caps, ua);
+  renderCaps(caps);
+  let count = 0;
+  try { count = await renderDevices(caps); } catch (e) { log("渲染设备列表异常: " + e.message); }
+  renderVerdict(caps, count);
+
+  if (caps.hasGetAvailability && caps.hasApi){
+    try {
+      // 部分无机型蓝牙适配器时该 Promise 会长时间不兑现，加 1.5s 超时保护
+      const av = await Promise.race([
+        navigator.bluetooth.getAvailability(),
+        new Promise((res) => setTimeout(() => res(null), 1500))
+      ]);
+      if (av !== null) log("蓝牙可用性: " + (av ? "可用" : "不可用（请开启手机蓝牙）"));
+      else log("蓝牙可用性: 查询超时（不影响后续判定）");
+    } catch(_){}
+  }
+  log(`检测完成 → getDevices:${caps.hasGetDevices ? "有" : "无"} / watchAdv:${caps.hasWatchAdv ? "有" : "无"} / 授权设备:${count}`);
+}
+
+function buildReport(){
+  const ua = uaSummary(), caps = detectCaps();
+  return [
+    "# SGMW 蓝牙自检报告 v" + PROBE_VER,
+    "时间: " + new Date().toISOString(),
+    "网址: " + location.href,
+    "协议/安全上下文: " + caps.protocol + " / " + caps.secure,
+    "浏览器: " + ua.name,
+    "Android: " + ua.android,
+    "UA: " + ua.ua,
+    "navigator.bluetooth: " + caps.hasApi,
+    "requestDevice: " + caps.hasRequestDevice,
+    "getDevices: " + caps.hasGetDevices,
+    "watchAdvertisements: " + caps.hasWatchAdv,
+    "getAvailability: " + caps.hasGetAvailability,
+    "lastDeviceId: " + (caps.lastId || "(空)"),
+    "--- 日志 ---",
+    logs.join("\n")
+  ].join("\n");
+}
+
+async function copyReport(){
+  const text = buildReport();
+  try {
+    await navigator.clipboard.writeText(text);
+    log("✔ 诊断报告已复制到剪贴板");
+    alert("诊断报告已复制，可直接粘贴发给我。");
+  } catch (e) {
+    const ta = document.createElement("textarea");
+    ta.value = text; ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand("copy"); log("✔ 已通过兼容方式复制报告"); }
+    catch (_) { log("✖ 复制失败，请在日志区手动长按选择"); }
+    document.body.removeChild(ta);
+  }
+}
+
+/* ====================== 事件绑定 ====================== */
+$("btnRescan").addEventListener("click", () => { log("手动重新检测…"); refresh(); });
+$("btnGrant").addEventListener("click", grantOnce);
+$("btnSilent").addEventListener("click", silentReconnect);
+$("btnClear").addEventListener("click", () => {
+  localStorage.removeItem(LS_LAST_DEVICE_ID);
+  log("已清空本地设备记录（浏览器授权本身需在站点设置里手动清除）");
+  refresh();
+});
+$("btnCopy").addEventListener("click", copyReport);
+
+/* ====================== 启动 ====================== */
+window.addEventListener("DOMContentLoaded", () => {
+  log("自检页启动 v" + PROBE_VER);
+  refresh().catch(e => log("自检异常: " + e.message));
+});
+</script>
+</body>
+</html>

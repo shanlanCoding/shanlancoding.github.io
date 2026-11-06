@@ -95,6 +95,21 @@
   .hint { font-size: 11.5px; color: var(--dim); line-height: 1.5; }
   .opt-box { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--dim); cursor: pointer; }
   .opt-box input { accent-color: var(--accent); }
+
+  /* 自动连接能力标识与设置步骤 */
+  .cap-tag { font-size: 11px; font-family: var(--mono); padding: 2px 8px; border-radius: 6px; letter-spacing: .2px; white-space: nowrap; }
+  .cap-ok { background: rgba(34, 211, 127, .16); color: var(--ok); }
+  .cap-warn { background: rgba(255, 176, 32, .16); color: var(--warn); }
+  .cap-err { background: rgba(255, 85, 102, .16); color: var(--err); }
+  details.steps { margin-top: 8px; }
+  details.steps > summary { cursor: pointer; color: var(--accent); font-size: 12.5px; font-weight: 600; outline: none; }
+  details.steps ol { margin: 8px 0 0; padding-left: 18px; line-height: 1.85; font-size: 12.5px; color: var(--dim); }
+  details.steps b { color: #fff; }
+  code.p {
+    font-family: var(--mono); background: #0a1017; border: 1px solid var(--line);
+    border-radius: 5px; padding: 1px 5px; color: var(--accent); font-size: 11.5px; word-break: break-all;
+  }
+  .banner-warn a, .hint a { color: var(--accent-2); }
 </style>
 </head>
 <body>
@@ -107,6 +122,9 @@
     若点击“连接设备”无法弹出蓝牙弹窗，请双击运行同目录下的 <b>【启动网页蓝牙.bat】</b>（访问 http://localhost:8080），或部署至云端 HTTPS 网站即可一键开启！
   </div>
 
+  <!-- 自动连接能力提示栏（由脚本按浏览器能力动态填充） -->
+  <div class="banner-warn" id="bannerCap" style="display:none"></div>
+
   <header>
     <h1>SGMW <span>ADAS / CAN</span> 蓝牙控制与 OTA</h1>
     <div class="status">
@@ -116,6 +134,7 @@
       <label class="opt-box" title="勾选后将扫描所有蓝牙广播，避免系统过滤器拦截">
         <input type="checkbox" id="chkAllDevices" checked> 全设备扫描模式
       </label>
+      <span class="cap-tag cap-warn" id="capTag">检测中…</span>
       <span class="dot" id="connDot"></span>
       <span id="connText" style="font-size:13px;color:var(--dim)">未连接</span>
       <button class="btn primary" id="btnConn">连接设备</button>
@@ -168,6 +187,10 @@
       </div>
     </section>
   </div>
+
+  <div class="hint" style="text-align:center;padding:2px 0 6px">
+    自动连接不生效？先跑一次 <a href="ble_auto_probe.html" target="_blank">手机端蓝牙能力自检</a>，一键判定当前浏览器是否支持 <code class="p">getDevices()</code>。
+  </div>
 </div>
 
 <script>
@@ -179,6 +202,235 @@ const U_OTA_CMD  = "0000fff3-0000-1000-8000-00805f9b34fb";
 const U_OTA_DATA = "0000fff4-0000-1000-8000-00805f9b34fb";
 
 const MAX_CHUNK   = 496;   // 单包上限 (适配 512 MTU)
+
+/* 蓝牙链路自动恢复模块（原生 ES2018，无第三方依赖，可直接内联到页面）
+ * 适用：Android 版 Chrome/Edge + HTTPS 页面，Web Bluetooth 只读遥测。
+ * 设计：getDevices()/watchAdvertisements() 全部做能力探测，缺失时优雅降级，不阻断手动点选连接流程。 */
+class BleAutoConnector {
+  constructor(opts) {
+    const o = opts || {};
+    const num = (v, d) => (Number(v) > 0 ? Number(v) : d);
+    this.onLog = typeof o.onLog === 'function' ? o.onLog : function () {};
+    this.onState = typeof o.onState === 'function' ? o.onState : function () {};
+    this.connectDevice = typeof o.connectDevice === 'function' ? o.connectDevice : function () { return Promise.reject(new Error('宿主未注入 connectDevice')); };
+    this.storageKey = o.storageKey || 'sgmw_ble_last_device_id';
+    this.nameHint = o.nameHint || 'SGMW';
+    this.firstGrantTimeoutMs = num(o.firstGrantTimeoutMs, 6000);
+    this.connectTimeoutMs = num(o.connectTimeoutMs, 10000);
+    this.maxAttempts = Math.max(1, Math.floor(num(o.maxAttempts, 12)));
+    this.mode = 'idle';                       // idle | wait | on | err
+    this.attempts = 0;                        // 本轮重试计数
+    this.deviceName = ''; this.lastError = '';
+    this.paused = false;
+    this.gen = 0;                             // 代际计数：pause()/重复调用让所有旧流程立即失效
+    this._timer = null;                       // 退避定时器句柄
+    this._wake = null;                        // 退避等待的 resolve，供 pause() 立即打断
+    this._lastId = this._readId();
+  }
+
+  // 同步能力探测，返回能力矩阵与处置建议
+  detect() {
+    const bt = (typeof navigator !== 'undefined' && navigator.bluetooth) ? navigator.bluetooth : null;
+    const hasApi = !!bt;
+    const hasRequestDevice = !!(bt && typeof bt.requestDevice === 'function');
+    const hasGetDevices = !!(bt && typeof bt.getDevices === 'function');
+    let hasWatchAdvertisements = false;
+    try { hasWatchAdvertisements = typeof BluetoothDevice !== 'undefined' && typeof BluetoothDevice.prototype.watchAdvertisements === 'function'; } catch (e) { hasWatchAdvertisements = false; }
+    const isSecureContext = (typeof window !== 'undefined' && window.isSecureContext === true) || (typeof location !== 'undefined' && location.protocol === 'https:');
+    let verdict = 'ok';
+    let advice = '能力齐全，可在无用户手势的情况下自动回连上次已授权设备。';
+    if (!hasApi || !isSecureContext || (!hasRequestDevice && !hasGetDevices)) { verdict = 'unsupported'; advice = '当前环境不支持 Web Bluetooth：请用 Android 版 Chrome/Edge 并以 HTTPS 打开本页，否则只能改用原生 App 连接。'; }
+    else if (!hasGetDevices) { verdict = 'degraded'; advice = '未开放 getDevices()：请在 chrome://flags 或 edge://flags 开启「实验性 Web 平台特性」与「新版蓝牙权限后端」两个开关并重启浏览器，否则只能手动点选连接。'; }
+    else if (!hasWatchAdvertisements) { advice = '可自动回连，但缺少 watchAdvertisements()，首次回连可能多等几秒。'; }
+    return { hasApi, hasRequestDevice, hasGetDevices, hasWatchAdvertisements, isSecureContext, verdict, advice };
+  }
+
+  // 对外入口：永不抛出未捕获异常
+  async autoConnect() {
+    try { return await this._run(); }
+    catch (e) { this.lastError = this._errText(e); this._log('自动重连流程异常：' + this.lastError); this._state('err', '流程异常'); return false; }
+  }
+
+  async _run() {
+    const gen = ++this.gen;
+    this._clearTimer();
+    const cap = this.detect();
+    if (!cap.hasApi) { this._log('当前环境没有 navigator.bluetooth，无法自动回连'); this._state('err', '不支持蓝牙'); return false; }
+    if (!cap.hasGetDevices) {
+      this._log('当前浏览器未开放 getDevices()，需在 edge://flags 或 chrome://flags 开启实验性 Web 平台特性与新版蓝牙权限后端两个开关');
+      this._state('wait', '需首次手动点选设备');
+      return false;
+    }
+    let list;
+    try {
+      // 蓝牙适配器未就绪时该 Promise 可能长时间不兑现，加超时保护避免流程卡死
+      list = await Promise.race([
+        navigator.bluetooth.getDevices(),
+        new Promise((_, rej) => setTimeout(() => rej(new Error('getDevices() 超时，蓝牙适配器未就绪')), 3000))
+      ]);
+    }
+    catch (e) {
+      this.lastError = this._errText(e);
+      this._log('getDevices() 调用失败：' + this.lastError + '（请确认系统蓝牙已开启；若刚开启 flags，请重启浏览器）');
+      this._state('err', '读取授权设备失败');
+      return false;
+    }
+    if (gen !== this.gen || this.paused) { this._log('流程已被暂停，取消本次自动回连'); return false; }
+    if (!Array.isArray(list) || list.length === 0) { this._log('尚未授权设备，请首次手动点选一次'); this._state('wait', '等待首次手动授权'); return false; }
+    const target = this._pickDevice(list);
+    if (!target) { this._log('授权列表无可用设备对象，放弃自动回连'); this._state('err', '无可用设备'); return false; }
+    this.deviceName = target.name || this.deviceName || '(未命名设备)';
+    this.lastError = '';
+    this._log('从已授权列表选中：' + this.deviceName + '（共 ' + list.length + ' 台）');
+
+    while (true) {
+      if (this.paused || gen !== this.gen) { this._log('自动回连已被取消'); return false; }
+      this.attempts += 1;
+      this._state('wait', '第 ' + this.attempts + ' 次尝试连接');
+      this._log('第 ' + this.attempts + '/' + this.maxAttempts + ' 次建链尝试：' + this.deviceName);
+      if (this.attempts === 1 && typeof target.watchAdvertisements === 'function') {   // 仅首轮等广播，避免每次重试都长阻塞
+        try { this._log(await this._waitAdvertisement(target, this.firstGrantTimeoutMs) ? '已收到目标设备广播，立即建链' : '未收到广播，直接尝试建链'); }
+        catch (e) { this._log('等待广播失败：' + this._errText(e) + '，改为直接尝试建链'); }
+        if (this.paused || gen !== this.gen) { this._log('自动回连已被取消'); return false; }
+      }
+      let ok = false;
+      try { await this._connectWithTimeout(target); ok = true; }
+      catch (e) { this.lastError = this._errText(e); this._log('建链失败：' + this.lastError); }
+      if (ok) {
+        this.attempts = 0;
+        this._rememberId(target.id);
+        this._log('自动回连成功：' + this.deviceName);
+        if (gen === this.gen) this._state('on', '已连接 ' + this.deviceName);
+        return true;
+      }
+      if (this.attempts >= this.maxAttempts) { this._log('已达到最大重试次数 ' + this.maxAttempts + '，停止自动回连'); this._state('err', '重试达上限，请手动连接'); return false; }
+      const delay = Math.min(2000 * Math.pow(1.5, this.attempts - 1), 6000);   // 指数退避，上限 6s
+      this._log('指数退避：' + Math.round(delay) + 'ms 后重试');
+      if (!(await this._sleep(delay, gen))) { this._log('退避等待被打断，取消重试'); return false; }
+    }
+  }
+
+  // 等待一次广播：收到即 resolve(true)；超时 reject；watch 启动失败 resolve(false) 直接放行
+  _waitAdvertisement(device, timeoutMs) {
+    if (!device || typeof device.watchAdvertisements !== 'function') return Promise.resolve(false);
+    return new Promise((resolve, reject) => {
+      let done = false;
+      let timer = null;
+      const ctrl = typeof AbortController !== 'undefined' ? new AbortController() : null;
+      const finish = (fn, arg) => {
+        if (done) return;
+        done = true;
+        if (timer) { clearTimeout(timer); timer = null; }
+        try { device.removeEventListener('advertisementreceived', onAdv); } catch (e) { /* 忽略 */ }
+        try { if (ctrl) ctrl.abort(); } catch (e) { /* 忽略 */ }   // 关闭广播监听，释放底层资源
+        fn(arg);
+      };
+      function onAdv() { finish(resolve, true); }
+      try { device.addEventListener('advertisementreceived', onAdv); }
+      catch (e) { done = true; reject(e); return; }
+      timer = setTimeout(() => finish(reject, new Error('等待广播超时（' + timeoutMs + 'ms）')), timeoutMs);
+      try {
+        const p = device.watchAdvertisements(ctrl ? { signal: ctrl.signal } : undefined);
+        if (p && typeof p.catch === 'function') p.catch((e) => { this._log('watchAdvertisements 启动失败：' + this._errText(e) + '，改为直接建链'); finish(resolve, false); });
+      } catch (e) {
+        this._log('watchAdvertisements 调用异常：' + this._errText(e) + '，改为直接建链');
+        finish(resolve, false);
+      }
+    });
+  }
+
+  // 建链 + 超时保护（同步异常也转为 rejected，超时后不会留下悬挂定时器）
+  _connectWithTimeout(device) {
+    const ms = this.connectTimeoutMs;
+    let timer = null;
+    const timeout = new Promise((_, reject) => { timer = setTimeout(() => reject(new Error('建链超时（' + ms + 'ms）')), ms); });
+    const task = Promise.resolve().then(() => this.connectDevice(device, true));
+    const done = () => { if (timer) { clearTimeout(timer); timer = null; } };
+    return Promise.race([task, timeout]).then((v) => { done(); return v; }, (e) => { done(); throw e; });
+  }
+
+  // 可被 pause() 立即打断的退避等待
+  _sleep(ms, gen) {
+    return new Promise((resolve) => {
+      this._clearTimer();
+      this._wake = resolve;
+      this._timer = setTimeout(() => { this._timer = null; this._wake = null; resolve(gen === this.gen && !this.paused); }, ms);
+    });
+  }
+
+  _clearTimer() {
+    if (this._timer) { clearTimeout(this._timer); this._timer = null; }
+    if (this._wake) { const w = this._wake; this._wake = null; try { w(false); } catch (e) { /* 忽略 */ } }
+  }
+
+  // 暂停：断开后调用，所有挂起重试立即失效
+  pause() {
+    this.paused = true;
+    this.gen += 1;
+    this._clearTimer();
+    this._log('已暂停自动重连，挂起的重试全部失效');
+    this._state('idle', '已暂停自动重连');
+  }
+
+  // 恢复：重置计数并立刻发起一次尝试
+  resume() {
+    this.paused = false;
+    this.gen += 1;
+    this.attempts = 0;
+    this._clearTimer();
+    this._log('恢复自动重连，立即发起一次尝试');
+    this._state('wait', '准备自动回连');
+    return this.autoConnect().catch((e) => { this._log('恢复流程异常：' + this._errText(e)); return false; });
+  }
+
+  // 用户手动选到设备后调用：记录 id 并重置重试计数
+  notifyGranted(device) {
+    if (!device || typeof device !== 'object') { this._log('notifyGranted 收到无效设备，已忽略'); return; }
+    const id = typeof device.id === 'string' ? device.id : '';
+    this.deviceName = device.name || this.deviceName || '';
+    this.attempts = 0;
+    this.lastError = '';
+    if (id) { this._rememberId(id); this._log('已记录授权设备：' + (this.deviceName || id)); }
+    else { this._log('设备缺少 id 字段，无法写入本地存储'); }
+    this._state('wait', '已记录授权设备，可自动回连');
+  }
+
+  getStatus() {
+    return { mode: this.mode, attempts: this.attempts, deviceName: this.deviceName, lastError: this.lastError };
+  }
+
+  // 优选顺序：localStorage 记录的 id 精确匹配 → 名称含 nameHint → 列表首个
+  _pickDevice(list) {
+    if (!Array.isArray(list) || !list.length) return null;
+    const stored = this._lastId || '';
+    if (stored) for (let i = 0; i < list.length; i += 1) if (list[i] && list[i].id === stored) return list[i];
+    const hint = String(this.nameHint || '').toLowerCase();
+    if (hint) for (let i = 0; i < list.length; i += 1) {
+      const d = list[i];
+      const n = d && typeof d.name === 'string' ? d.name.toLowerCase() : '';
+      if (n && n.indexOf(hint) >= 0) return d;
+    }
+    return list[0] || null;
+  }
+
+  _readId() {
+    try { const v = typeof localStorage !== 'undefined' ? localStorage.getItem(this.storageKey) : null; return typeof v === 'string' ? v : ''; }
+    catch (e) { return ''; }
+  }
+
+  _rememberId(id) {
+    if (!id) return;
+    this._lastId = id;
+    try { if (typeof localStorage !== 'undefined') localStorage.setItem(this.storageKey, id); }
+    catch (e) { this._log('写入 localStorage 失败：' + this._errText(e)); }
+  }
+
+  _errText(e) { if (!e) return '未知错误'; if (typeof e === 'string') return e; return (e.name ? e.name + ': ' : '') + (e.message || '未知错误'); }
+  _log(msg) { try { this.onLog(String(msg)); } catch (e) { /* 宿主回调异常不得影响主流程 */ } }
+  _state(kind, text) { this.mode = kind; try { this.onState(kind, String(text)); } catch (e) { /* 同上 */ } }
+}
+
+window.BleAutoConnector = BleAutoConnector;
 
 /* ====================== DOM 引用 ====================== */
 const $ = (id) => document.getElementById(id);
@@ -194,6 +446,8 @@ const btnOta = $("btnOta");
 const chkAllDevices = $("chkAllDevices");
 const chkAutoReconnect = $("chkAutoReconnect");
 const bannerWarn = $("bannerWarn");
+const bannerCap = $("bannerCap");
+const capTag = $("capTag");
 
 // 本地持久化配置 Key
 const LS_AUTO_RECONNECT = "sgmw_ble_auto_reconnect";
@@ -206,12 +460,16 @@ chkAutoReconnect.addEventListener("change", () => {
   if (!chkAutoReconnect.checked && reconnectTimer) {
     clearTimeout(reconnectTimer);
     reconnectTimer = null;
+    autoLink.pause();
     setConnStatus("err", "未连接 (自动重连已暂停)");
+    appendLog(logTel, state.logs.tel, "已关闭自动重连");
+  } else if (!chkAutoReconnect.checked) {
+    autoLink.pause();
     appendLog(logTel, state.logs.tel, "已关闭自动重连");
   } else if (chkAutoReconnect.checked && !state.connected) {
     appendLog(logTel, state.logs.tel, "已启用自动重连");
     if (state.device) scheduleAutoReconnect();
-    else tryAutoConnectOnLoad();
+    else autoLink.resume();   // 恢复零点击自动连接引擎
   }
 });
 
@@ -241,6 +499,22 @@ let userExplicitDisconnect = false;
 let reconnectTimer = null;
 let reconnectAttempts = 0;
 
+/* ====================== 自动连接引擎实例 ====================== */
+const autoLink = new BleAutoConnector({
+  onLog:   (msg)        => appendLog(logTel, state.logs.tel, msg),
+  onState: (kind, text) => setConnStatus(kind === "on" ? "on" : (kind === "err" ? "err" : "wait"), text),
+  connectDevice: async (device) => {
+    // 幂等保护：已连同一台设备时直接视为成功，避免重复建链
+    if (state.connected && state.device && device && state.device.id === device.id) return;
+    await setupGatt(device, true);
+  },
+  storageKey: LS_LAST_DEVICE_ID,
+  nameHint: "SGMW",
+  firstGrantTimeoutMs: 6000,
+  connectTimeoutMs: 12000,
+  maxAttempts: 12
+});
+
 /* ====================== 日志与 UI 工具 ====================== */
 function ts(){ return new Date().toLocaleTimeString("zh-CN",{hour12:false}); }
 function appendLog(node, arr, msg){
@@ -255,7 +529,7 @@ function hex(n, w){ return "0x" + n.toString(16).toUpperCase().padStart(w,"0"); 
 function setConnStatus(kind, label){
   connDot.className = "dot";
   if (kind === "on") connDot.classList.add("on");
-  else if (kind === "wait") connDot.classList.add("wait");
+  else if (kind === "wait" || kind === "idle") connDot.classList.add("wait");
   connText.textContent = label;
 }
 
@@ -304,6 +578,7 @@ async function setupGatt(device, isAuto = false){
   if (device.id) {
     localStorage.setItem(LS_LAST_DEVICE_ID, device.id);
   }
+  if (!isAuto) autoLink.notifyGranted(device);   // 手动授权后同步给自动连接引擎
 
   state.chunk = MAX_CHUNK;
   fwChunk.textContent = state.chunk + " B";
@@ -421,6 +696,7 @@ function scheduleAutoReconnect(){
 /* 手动断开 */
 async function disconnect(){
   userExplicitDisconnect = true;
+  autoLink.pause();
   if (reconnectTimer) {
     clearTimeout(reconnectTimer);
     reconnectTimer = null;
@@ -434,34 +710,59 @@ async function disconnect(){
 
 /* 页面加载时自动连接已授权设备 (W3C getDevices 规范) */
 async function tryAutoConnectOnLoad(){
-  if (!navigator.bluetooth || typeof navigator.bluetooth.getDevices !== "function") {
-    appendLog(logTel, state.logs.tel, "提示：当前浏览器暂未开放 getDevices() 权限，初次使用请点击【连接设备】。");
+  if (!chkAutoReconnect.checked || userExplicitDisconnect || state.connected) return;
+
+  const cap = autoLink.detect();
+  renderCapability(cap);
+
+  if (!cap.hasApi) {
+    appendLog(logTel, state.logs.tel, "提示：当前环境无法使用 Web Bluetooth（需 HTTPS 或 localhost）。");
     return;
   }
-  if (!chkAutoReconnect.checked) return;
 
-  try {
-    const devices = await navigator.bluetooth.getDevices();
-    if (!devices || devices.length === 0) {
-      appendLog(logTel, state.logs.tel, "提示：尚未授权过设备。首次请点击【连接设备】授权，授权后每次打开或掉线都将全自动秒连！");
-      return;
-    }
-
-    const lastId = localStorage.getItem(LS_LAST_DEVICE_ID);
-    // 优先匹配最后记录的设备 ID，其次匹配名称含 SGMW，最后选首个已授权设备
-    const target = devices.find(d => d.id === lastId) ||
-                   devices.find(d => (d.name && d.name.includes("SGMW"))) ||
-                   devices[0];
-
-    if (target) {
-      setConnStatus("wait", "检测到已授权设备，正在自动免密秒连…");
-      appendLog(logTel, state.logs.tel, `[自动连接] 发现已授权设备 [${target.name || target.id}]，正在建立连接…`);
-      await setupGatt(target, true);
-    }
-  } catch (err) {
-    console.warn("Auto connect on load failed:", err);
-    appendLog(logTel, state.logs.tel, "自动免密连接提示: " + err.message);
+  if (!cap.hasGetDevices) {
+    appendLog(logTel, state.logs.tel, "提示：当前浏览器未开放 getDevices()，无法免点击自动连接。首次请点击【连接设备】手动授权一次；如需「打开即连」，请按页面顶部提示开启实验性特性。");
+    return;
   }
+
+  // 交给自动连接引擎：读取授权列表 → 等待广播 → 建链 → 指数退避重试
+  await autoLink.autoConnect();
+}
+
+/* 渲染自动连接能力标识与提示栏 */
+function renderCapability(cap){
+  cap = cap || autoLink.detect();
+
+  if (!cap.hasApi) {
+    capTag.className = "cap-tag cap-err";
+    capTag.textContent = "无蓝牙 API";
+    bannerCap.style.display = "block";
+    bannerCap.innerHTML = "<b>⚠ 当前页面无法使用 Web Bluetooth API。</b><br>" +
+      '浏览器要求该特性必须运行在安全上下文中：请以 <code class="p">https://</code> 网址访问，或本地使用 <code class="p">http://localhost</code>。';
+    return;
+  }
+
+  if (cap.hasGetDevices) {
+    capTag.className = "cap-tag cap-ok";
+    capTag.textContent = cap.hasWatchAdvertisements ? "自动连接: 就绪" : "自动连接: 就绪(无广播等待)";
+    bannerCap.style.display = "none";
+    bannerCap.innerHTML = "";
+    return;
+  }
+
+  capTag.className = "cap-tag cap-warn";
+  capTag.textContent = "自动连接: 需手动点选";
+  bannerCap.style.display = "block";
+  bannerCap.innerHTML =
+    "<b>⚠ 当前浏览器未开放 getDevices()：每次打开网页仍需手动点选一次设备，无法零点击自动连接。</b><br>" +
+    "这是 Android 版 Chromium 的默认行为（getDevices 属实验性特性）。开启下面两项开关即可获得「打开即连、零点击」：" +
+    '<details class="steps"><summary>展开一次性设置步骤（每台手机做一次）</summary><ol>' +
+    '<li><b>Edge 安卓版</b>地址栏输入 <code class="p">edge://flags</code>；<b>Chrome 安卓版</b>输入 <code class="p">chrome://flags</code>。</li>' +
+    '<li>搜索并开启 <code class="p">#enable-experimental-web-platform-features</code> → 设为 <b>Enabled</b>（提供 getDevices）。</li>' +
+    '<li>搜索并开启 <code class="p">#enable-web-bluetooth-new-permissions-backend</code> → 设为 <b>Enabled</b>（让授权在浏览器重启后仍保留）。</li>' +
+    '<li>点底部 <b>Relaunch / 重启</b>，再用<b>完全相同的网址</b>打开本页。</li>' +
+    '</ol></details>' +
+    '<div style="margin-top:6px">不确定是否可行？先打开 <a href="ble_auto_probe.html" target="_blank">手机端蓝牙能力自检</a> 一键判定。</div>';
 }
 
 btnConn.addEventListener("click", connect);
@@ -671,10 +972,26 @@ btnOta.addEventListener("click", runOta);
 setConnStatus("err", "未连接");
 toggleButtons(false);
 
-// 页面加载就绪后，自动尝试连接已授权过的设备 (W3C getDevices)
+// 页面加载就绪后：先渲染能力标识，再自动连接已授权设备 (W3C getDevices)
 window.addEventListener("DOMContentLoaded", () => {
-  setTimeout(tryAutoConnectOnLoad, 400);
+  try { renderCapability(); } catch (e) { console.warn("能力渲染失败:", e); }
+  setTimeout(() => { tryAutoConnectOnLoad(); }, 400);
 });
+
+// 回到前台时补一次尝试（手机锁屏 / 切后台后浏览器会节流定时器）
+let lastResumeTry = 0;
+function retryOnVisible(){
+  if (state.connected || userExplicitDisconnect || !chkAutoReconnect.checked) return;
+  const now = Date.now();
+  if (now - lastResumeTry < 5000) return;      // 5 秒去抖，避免频繁触发
+  lastResumeTry = now;
+  appendLog(logTel, state.logs.tel, "[恢复] 页面重新可见，补一次自动连接尝试");
+  tryAutoConnectOnLoad();
+}
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") retryOnVisible();
+});
+window.addEventListener("pageshow", (e) => { if (e.persisted) retryOnVisible(); });
 </script>
 </body>
 </html>
